@@ -14,3 +14,4 @@ tmp
 !.grok/app-env.json
 AGENTS.md
 startup.sh
+attachments/
