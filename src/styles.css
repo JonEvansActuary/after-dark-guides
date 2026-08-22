@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0c0b0a;
+  --color-surface: #161412;
+  --color-raised: #1e1b18;
+  --color-fg: #f2eee6;
+  --color-muted: #9a9186;
+  --color-faint: #6e675e;
+  --color-line: #2a2622;
+  --color-accent: #c9b8a0;
+  --color-looks: #c45c3e;
+  --color-ratio: #7d9e93;
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+    overflow-anchor: none;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-fg);
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+    cursor: pointer;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  a,
+  input,
+  select,
+  label {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgb(201 184 160 / 0.25);
+  }
+
+  ::selection {
+    background: var(--color-looks);
+    color: var(--color-fg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
