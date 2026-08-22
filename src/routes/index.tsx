@@ -132,7 +132,7 @@ function Home() {
   }, [region, scope, view, area]);
 
   return (
-    <div className="min-h-screen bg-bg pb-40 text-fg">
+    <div className="min-h-screen bg-bg pb-56 text-fg">
       <div className="mx-auto max-w-6xl px-4 pt-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
@@ -142,9 +142,6 @@ function Home() {
             <h1 className="font-display text-2xl leading-none sm:text-3xl">
               After Dark Beach
             </h1>
-            <a href="/knoxville" className="mt-2 inline-block text-[11px] text-accent no-underline">
-              Knoxville guide →
-            </a>
           </div>
           <p className="hidden text-right text-xs leading-relaxed text-muted lg:block">
             {pool.length} places in {current.tab} · {districts.length} districts
@@ -340,11 +337,31 @@ function Home() {
 
       {open ? <VenueDetail venue={open} onClose={() => setOpen(null)} /> : null}
 
-      <nav
+      <div
         className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-bg from-70% to-transparent px-3 pb-[max(4.75rem,env(safe-area-inset-bottom))] pt-3"
-        aria-label="Region"
       >
-        <div className="mx-auto flex max-w-lg overflow-hidden rounded-lg border border-line bg-surface">
+        <nav
+          className="mx-auto mb-2 flex max-w-lg overflow-hidden rounded-lg border border-line bg-surface"
+          aria-label="City"
+        >
+          <a
+            href="/"
+            aria-current="page"
+            className="inline-flex h-12 min-w-0 flex-1 items-center justify-center bg-accent px-3 text-sm font-medium text-bg no-underline"
+          >
+            Beach
+          </a>
+          <a
+            href="/knoxville"
+            className="inline-flex h-12 min-w-0 flex-1 items-center justify-center px-3 text-sm font-medium text-muted no-underline"
+          >
+            Knoxville
+          </a>
+        </nav>
+        <nav
+          className="mx-auto flex max-w-lg overflow-hidden rounded-lg border border-line bg-surface"
+          aria-label="Region"
+        >
           {BEACH_REGIONS.map((r) => (
             <a
               key={r.id}
@@ -358,8 +375,8 @@ function Home() {
               {r.tab}
             </a>
           ))}
-        </div>
-      </nav>
+        </nav>
+      </div>
     </div>
   );
 }
