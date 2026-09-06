@@ -50,11 +50,15 @@ export default function VenueMapCanvas({ places, selectedId, onOpen }: Props) {
   const origin = places[0] ? placeCoords(places[0]) : { lat: 25.8, lng: -80.13 };
 
   return (
-    <div className="venue-map-shell relative overflow-hidden rounded-lg border border-line">
+    <div
+      className="venue-map-shell relative overflow-hidden rounded-lg border border-line"
+      data-origin-lat={origin.lat.toFixed(4)}
+      data-origin-lng={origin.lng.toFixed(4)}
+    >
       <MapContainer
         center={[origin.lat, origin.lng]}
         zoom={14}
-        minZoom={11}
+        minZoom={10}
         maxZoom={18}
         className="h-full w-full"
         scrollWheelZoom

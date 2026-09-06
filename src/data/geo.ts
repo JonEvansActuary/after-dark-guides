@@ -65,6 +65,46 @@ const AREA: Record<string, LatLng> = {
   "east::Asheville Highway": { lat: 35.9854, lng: -83.8548 },
   "east::Parkridge": { lat: 35.9732, lng: -83.9084 },
   "east::Holston": { lat: 36.0002, lng: -83.8504 },
+  // Nashville
+  "nash-downtown::Broadway": { lat: 36.1606, lng: -86.7778 },
+  "nash-downtown::2nd Avenue": { lat: 36.1612, lng: -86.7754 },
+  "nash-downtown::Printers Alley": { lat: 36.1644, lng: -86.7796 },
+  "nash-downtown::Germantown": { lat: 36.1766, lng: -86.7882 },
+  "nash-gulch::The Gulch": { lat: 36.1528, lng: -86.7826 },
+  "nash-gulch::SoBro": { lat: 36.1548, lng: -86.7756 },
+  "nash-gulch::Demonbreun": { lat: 36.1566, lng: -86.7788 },
+  "nash-east::Five Points": { lat: 36.1768, lng: -86.7504 },
+  "nash-east::Gallatin Pike": { lat: 36.186, lng: -86.7392 },
+  "nash-east::Riverside": { lat: 36.1848, lng: -86.7246 },
+  "nash-east::Lockeland": { lat: 36.1812, lng: -86.7422 },
+  "nash-midtown::Midtown": { lat: 36.1518, lng: -86.7968 },
+  "nash-midtown::West End": { lat: 36.1482, lng: -86.8054 },
+  "nash-midtown::Music Row": { lat: 36.1472, lng: -86.7932 },
+  "nash-south::12 South": { lat: 36.1228, lng: -86.7904 },
+  "nash-south::Wedgewood-Houston": { lat: 36.1404, lng: -86.7752 },
+  "nash-south::Berry Hill": { lat: 36.1168, lng: -86.7684 },
+  "nash-south::Green Hills": { lat: 36.1064, lng: -86.8152 },
+  // Atlanta
+  "atl-midtown::10th & Piedmont": { lat: 33.7818, lng: -84.3794 },
+  "atl-midtown::Crescent": { lat: 33.7846, lng: -84.3846 },
+  "atl-midtown::Colony Square": { lat: 33.7868, lng: -84.384 },
+  "atl-midtown::Peachtree Midtown": { lat: 33.7806, lng: -84.3842 },
+  "atl-buckhead::Village": { lat: 33.8386, lng: -84.3794 },
+  "atl-buckhead::Piedmont": { lat: 33.8372, lng: -84.3704 },
+  "atl-buckhead::Pharr": { lat: 33.8376, lng: -84.3778 },
+  "atl-buckhead::Peachtree Buckhead": { lat: 33.8466, lng: -84.3642 },
+  "atl-east::Edgewood": { lat: 33.7546, lng: -84.3712 },
+  "atl-east::Ponce City": { lat: 33.7726, lng: -84.3654 },
+  "atl-east::Inman Park": { lat: 33.7572, lng: -84.3524 },
+  "atl-east::Virginia-Highland": { lat: 33.7822, lng: -84.3528 },
+  "atl-east::Little Five": { lat: 33.7652, lng: -84.3492 },
+  "atl-east::EAV": { lat: 33.7402, lng: -84.3462 },
+  "atl-west::West Midtown": { lat: 33.7872, lng: -84.4118 },
+  "atl-west::Howell Mill": { lat: 33.7892, lng: -84.4132 },
+  "atl-west::Atlantic Station": { lat: 33.7924, lng: -84.3968 },
+  "atl-downtown::Downtown Core": { lat: 33.7552, lng: -84.3904 },
+  "atl-downtown::Castleberry": { lat: 33.7482, lng: -84.4012 },
+  "atl-downtown::Underground": { lat: 33.7524, lng: -84.3902 },
 };
 
 const PIN: Record<string, LatLng> = {
@@ -77,6 +117,20 @@ const PIN: Record<string, LatLng> = {
   "bernadettes": { lat: 35.965, lng: -83.9193 },
   "w-cotton-eyed-joe": { lat: 35.9058, lng: -84.1462 },
   "w-kitchen-919": { lat: 35.9376, lng: -83.9868 },
+  "n-tootsies": { lat: 36.1605, lng: -86.7781 },
+  "n-ryman": { lat: 36.1613, lng: -86.7785 },
+  "n-acme": { lat: 36.162, lng: -86.7744 },
+  "n-attaboy": { lat: 36.1774, lng: -86.7505 },
+  "n-patterson": { lat: 36.1514, lng: -86.7809 },
+  "n-lukes": { lat: 36.1608, lng: -86.7772 },
+  "a-tg": { lat: 33.8388, lng: -84.3792 },
+  "a-blakes": { lat: 33.7817, lng: -84.379 },
+  "a-compound": { lat: 33.7876, lng: -84.4114 },
+  "a-pcm": { lat: 33.7725, lng: -84.3655 },
+  "a-pcm-roof": { lat: 33.7728, lng: -84.3653 },
+  "a-tabernacle": { lat: 33.7594, lng: -84.3922 },
+  "a-clermont": { lat: 33.7736, lng: -84.3618 },
+  "a-msr": { lat: 33.7848, lng: -84.3844 },
 };
 
 function hash32(s: string) {
@@ -138,16 +192,47 @@ function isBeachRegion(region: string) {
   );
 }
 
+function isNashRegion(region: string) {
+  return region.startsWith("nash-");
+}
+
+function isAtlRegion(region: string) {
+  return region.startsWith("atl-");
+}
+
+function isKnoxRegion(region: string) {
+  return (
+    region === "downtown" ||
+    region === "west" ||
+    region === "north" ||
+    region === "south" ||
+    region === "east"
+  );
+}
+
+type CityKey = "beach" | "knox" | "nash" | "atl";
+
+function cityOf(region: string): CityKey {
+  if (isBeachRegion(region)) return "beach";
+  if (isNashRegion(region)) return "nash";
+  if (isAtlRegion(region)) return "atl";
+  if (isKnoxRegion(region)) return "knox";
+  return "knox";
+}
+
+const BBOX: Record<CityKey, { lat0: number; lat1: number; lng0: number; lng1: number; fallback: LatLng }> = {
+  beach: { lat0: 25.752, lat1: 25.962, lng0: -80.16, lng1: -80.105, fallback: { lat: 25.81, lng: -80.128 } },
+  knox: { lat0: 35.85, lat1: 36.12, lng0: -84.22, lng1: -83.82, fallback: { lat: 35.9606, lng: -83.9208 } },
+  nash: { lat0: 36.08, lat1: 36.22, lng0: -86.86, lng1: -86.70, fallback: { lat: 36.162, lng: -86.778 } },
+  atl: { lat0: 33.72, lat1: 33.87, lng0: -84.45, lng1: -84.32, fallback: { lat: 33.76, lng: -84.388 } },
+};
+
 function clamp(p: Place, pt: LatLng): LatLng {
+  const city = cityOf(p.region);
+  const box = BBOX[city];
   const area = AREA[`${p.region}::${p.area}`];
-  if (isBeachRegion(p.region)) {
-    if (pt.lat < 25.752 || pt.lat > 25.962 || pt.lng < -80.16 || pt.lng > -80.105) {
-      return area ?? { lat: 25.81, lng: -80.128 };
-    }
-    return pt;
-  }
-  if (pt.lat < 35.85 || pt.lat > 36.12 || pt.lng < -84.22 || pt.lng > -83.82) {
-    return area ?? { lat: 35.9606, lng: -83.9208 };
+  if (pt.lat < box.lat0 || pt.lat > box.lat1 || pt.lng < box.lng0 || pt.lng > box.lng1) {
+    return area ?? box.fallback;
   }
   return pt;
 }
@@ -178,25 +263,141 @@ function fromKnoxAddress(address: string, area: string): LatLng | null {
   return null;
 }
 
+function fromNashAddress(address: string): LatLng | null {
+  const broadway = address.match(/(\d{2,4})\s+Broadway/i);
+  if (broadway) {
+    const n = Number(broadway[1]);
+    const t = Math.min(1, Math.max(0, (n - 100) / 400));
+    return { lat: 36.1618 - t * 0.0024, lng: -86.7746 - t * 0.006 };
+  }
+  const second = address.match(/(\d{2,4})\s+2nd\s+Ave\s*([NS])?/i);
+  if (second) {
+    const n = Number(second[1]);
+    const south = (second[2] || "N").toUpperCase() === "S";
+    return { lat: 36.1622 + (south ? -n * 0.00002 : n * 0.000012), lng: -86.7755 };
+  }
+  const fourthN = address.match(/(\d{2,4})\s+4th\s+Ave\s*N/i);
+  if (fourthN) {
+    const n = Number(fourthN[1]);
+    if (n >= 1000) return { lat: 36.174 + (n - 1200) * 0.00002, lng: -86.788 };
+    return { lat: 36.1638, lng: -86.7798 };
+  }
+  const twelfth = address.match(/(\d{2,4})\s+12th\s+Ave\s*S/i);
+  if (twelfth) {
+    const n = Number(twelfth[1]);
+    if (n >= 2000) {
+      const t = Math.min(1, Math.max(0, (n - 2000) / 1000));
+      return { lat: 36.132 - t * 0.014, lng: -86.789 };
+    }
+    return { lat: 36.153 - Math.min(n, 900) * 0.000012, lng: -86.783 };
+  }
+  const eighth = address.match(/(\d{2,4})\s+8th\s+Ave\s*S/i);
+  if (eighth) {
+    const n = Number(eighth[1]);
+    const t = Math.min(1, Math.max(0, (n - 200) / 2400));
+    return { lat: 36.154 - t * 0.04, lng: -86.778 };
+  }
+  const gallatin = address.match(/(\d{3,5})\s+Gallatin/i);
+  if (gallatin) {
+    const n = Number(gallatin[1]);
+    const t = Math.min(1, Math.max(0, (n - 900) / 3500));
+    return { lat: 36.176 + t * 0.045, lng: -86.750 + t * 0.024 };
+  }
+  const woodland = address.match(/(\d{3,4})\s+Woodland/i);
+  if (woodland) {
+    const n = Number(woodland[1]);
+    return { lat: 36.1768, lng: -86.756 + Math.min(n, 1600) * 0.000008 };
+  }
+  const westEnd = address.match(/(\d{3,4})\s+West End/i);
+  if (westEnd) {
+    const n = Number(westEnd[1]);
+    return { lat: 36.149, lng: -86.798 - Math.min(n, 2400) * 0.000004 };
+  }
+  return null;
+}
+
+function fromAtlAddress(address: string): LatLng | null {
+  const peach = address.match(/(\d{3,4})\s+(?:W\s+)?Peachtree(?:\s+St|\s+Rd)?/i);
+  if (peach) {
+    const n = Number(peach[1]);
+    if (n >= 2800) {
+      const t = Math.min(1, Math.max(0, (n - 3000) / 800));
+      return { lat: 33.838 + t * 0.012, lng: -84.378 + t * 0.012 };
+    }
+    const t = Math.min(1, Math.max(0, (n - 600) / 900));
+    return { lat: 33.772 + t * 0.016, lng: -84.386 };
+  }
+  const tenth = address.match(/(\d{2,4})\s+10th\s+St/i);
+  if (tenth) {
+    const n = Number(tenth[1]);
+    return { lat: 33.7818, lng: -84.388 + Math.min(n, 600) * 0.00002 };
+  }
+  const crescent = address.match(/(\d{3,4})\s+Crescent/i);
+  if (crescent) {
+    return { lat: 33.7846, lng: -84.3846 };
+  }
+  const howell = address.match(/(\d{3,4})\s+Howell Mill/i);
+  if (howell) {
+    const n = Number(howell[1]);
+    return { lat: 33.784 + Math.min(n, 1200) * 0.000008, lng: -84.412 };
+  }
+  const highland = address.match(/(\d{3,4})\s+N(?:orth)?\s+Highland/i);
+  if (highland) {
+    const n = Number(highland[1]);
+    return { lat: 33.776 + Math.min(n, 900) * 0.000012, lng: -84.3526 };
+  }
+  const edgewood = address.match(/(\d{3,4})\s+Edgewood/i);
+  if (edgewood) {
+    const n = Number(edgewood[1]);
+    return { lat: 33.7548, lng: -84.378 + Math.min(n, 600) * 0.00002 };
+  }
+  const moreland = address.match(/(\d{3,4})\s+Moreland/i);
+  if (moreland) {
+    const n = Number(moreland[1]);
+    return { lat: 33.768 - Math.min(n, 500) * 0.00002, lng: -84.349 };
+  }
+  const flat = address.match(/(\d{3,4})\s+Flat Shoals/i);
+  if (flat) {
+    return { lat: 33.7404, lng: -84.3464 };
+  }
+  const piedmontRd = address.match(/(\d{3,4})\s+Piedmont(?:\s+Rd|\s+Ave)?/i);
+  if (piedmontRd) {
+    const n = Number(piedmontRd[1]);
+    if (n >= 2000) return { lat: 33.81 + (n - 2400) * 0.00002, lng: -84.367 };
+    return { lat: 33.782, lng: -84.379 };
+  }
+  const ponce = address.match(/(\d{3,4})\s+Ponce/i);
+  if (ponce) {
+    const n = Number(ponce[1]);
+    return { lat: 33.773, lng: -84.378 + Math.min(n, 800) * 0.000015 };
+  }
+  return null;
+}
+
 export function placeCoords(p: Place): LatLng {
   const pinned = PIN[p.id];
   if (pinned) return jitter(p.id, clamp(p, pinned));
 
-  const beach = fromBeachAddress(p.address);
-  if (beach && isBeachRegion(p.region)) {
-    return jitter(p.id, clamp(p, beach));
-  }
+  const city = cityOf(p.region);
 
-  const knox = fromKnoxAddress(p.address, p.area);
-  if (knox) return jitter(p.id, clamp(p, knox));
+  if (city === "beach") {
+    const beach = fromBeachAddress(p.address);
+    if (beach) return jitter(p.id, clamp(p, beach));
+  } else if (city === "nash") {
+    const nash = fromNashAddress(p.address);
+    if (nash) return jitter(p.id, clamp(p, nash));
+  } else if (city === "atl") {
+    const atl = fromAtlAddress(p.address);
+    if (atl) return jitter(p.id, clamp(p, atl));
+  } else {
+    const knox = fromKnoxAddress(p.address, p.area);
+    if (knox) return jitter(p.id, clamp(p, knox));
+  }
 
   const area = AREA[`${p.region}::${p.area}`];
   if (area) return jitter(p.id, area);
 
-  if (p.region === "west" || p.region === "north" || p.region === "south" || p.region === "east" || p.region === "downtown") {
-    return jitter(p.id, { lat: 35.9606, lng: -83.9208 });
-  }
-  return jitter(p.id, { lat: 25.81, lng: -80.128 });
+  return jitter(p.id, BBOX[city].fallback);
 }
 
 export function looksPinColor(looks: number) {
@@ -204,3 +405,4 @@ export function looksPinColor(looks: number) {
   if (looks >= 5.5) return "#c9b8a0";
   return "#6e675e";
 }
+

@@ -70,8 +70,8 @@ export const BEACH_AREAS = {
 
 export type BeachArea = (typeof BEACH_AREAS)[BeachRegionId][number];
 
-export function beachDistricts(id: BeachRegionId): readonly BeachArea[] {
-  return BEACH_AREAS[id] as readonly BeachArea[];
+export function beachDistricts(id: string): readonly string[] {
+  return (BEACH_AREAS as Record<string, readonly string[]>)[id] ?? [];
 }
 
 export function beachById(id: BeachRegionId) {
