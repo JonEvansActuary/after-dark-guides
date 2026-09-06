@@ -21,7 +21,7 @@ export function VenueDetail({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-bg/70 p-4 pb-36 sm:p-6 sm:pb-36"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-bg/70 p-4 pb-44 sm:p-6 sm:pb-44"
       onClick={onClose}
       role="presentation"
     >

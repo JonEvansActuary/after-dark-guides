@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AtlantaRouteImport } from './routes/atlanta'
+import { Route as ChattanoogaRouteImport } from './routes/chattanooga'
+import { Route as CincinnatiRouteImport } from './routes/cincinnati'
 import { Route as KnoxvilleRouteImport } from './routes/knoxville'
+import { Route as LexingtonRouteImport } from './routes/lexington'
+import { Route as LouisvilleRouteImport } from './routes/louisville'
 import { Route as NashvilleRouteImport } from './routes/nashville'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,9 +28,29 @@ const AtlantaRoute = AtlantaRouteImport.update({
   path: '/atlanta',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChattanoogaRoute = ChattanoogaRouteImport.update({
+  id: '/chattanooga',
+  path: '/chattanooga',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CincinnatiRoute = CincinnatiRouteImport.update({
+  id: '/cincinnati',
+  path: '/cincinnati',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KnoxvilleRoute = KnoxvilleRouteImport.update({
   id: '/knoxville',
   path: '/knoxville',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LexingtonRoute = LexingtonRouteImport.update({
+  id: '/lexington',
+  path: '/lexington',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LouisvilleRoute = LouisvilleRouteImport.update({
+  id: '/louisville',
+  path: '/louisville',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NashvilleRoute = NashvilleRouteImport.update({
@@ -38,34 +62,75 @@ const NashvilleRoute = NashvilleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atlanta': typeof AtlantaRoute
+  '/chattanooga': typeof ChattanoogaRoute
+  '/cincinnati': typeof CincinnatiRoute
   '/knoxville': typeof KnoxvilleRoute
+  '/lexington': typeof LexingtonRoute
+  '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/atlanta': typeof AtlantaRoute
+  '/chattanooga': typeof ChattanoogaRoute
+  '/cincinnati': typeof CincinnatiRoute
   '/knoxville': typeof KnoxvilleRoute
+  '/lexington': typeof LexingtonRoute
+  '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/atlanta': typeof AtlantaRoute
+  '/chattanooga': typeof ChattanoogaRoute
+  '/cincinnati': typeof CincinnatiRoute
   '/knoxville': typeof KnoxvilleRoute
+  '/lexington': typeof LexingtonRoute
+  '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/atlanta' | '/knoxville' | '/nashville'
+  fullPaths:
+    | '/'
+    | '/atlanta'
+    | '/chattanooga'
+    | '/cincinnati'
+    | '/knoxville'
+    | '/lexington'
+    | '/louisville'
+    | '/nashville'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/atlanta' | '/knoxville' | '/nashville'
-  id: '__root__' | '/' | '/atlanta' | '/knoxville' | '/nashville'
+  to:
+    | '/'
+    | '/atlanta'
+    | '/chattanooga'
+    | '/cincinnati'
+    | '/knoxville'
+    | '/lexington'
+    | '/louisville'
+    | '/nashville'
+  id:
+    | '__root__'
+    | '/'
+    | '/atlanta'
+    | '/chattanooga'
+    | '/cincinnati'
+    | '/knoxville'
+    | '/lexington'
+    | '/louisville'
+    | '/nashville'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AtlantaRoute: typeof AtlantaRoute
+  ChattanoogaRoute: typeof ChattanoogaRoute
+  CincinnatiRoute: typeof CincinnatiRoute
   KnoxvilleRoute: typeof KnoxvilleRoute
+  LexingtonRoute: typeof LexingtonRoute
+  LouisvilleRoute: typeof LouisvilleRoute
   NashvilleRoute: typeof NashvilleRoute
 }
 
@@ -85,11 +150,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtlantaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chattanooga': {
+      id: '/chattanooga'
+      path: '/chattanooga'
+      fullPath: '/chattanooga'
+      preLoaderRoute: typeof ChattanoogaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cincinnati': {
+      id: '/cincinnati'
+      path: '/cincinnati'
+      fullPath: '/cincinnati'
+      preLoaderRoute: typeof CincinnatiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/knoxville': {
       id: '/knoxville'
       path: '/knoxville'
       fullPath: '/knoxville'
       preLoaderRoute: typeof KnoxvilleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lexington': {
+      id: '/lexington'
+      path: '/lexington'
+      fullPath: '/lexington'
+      preLoaderRoute: typeof LexingtonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/louisville': {
+      id: '/louisville'
+      path: '/louisville'
+      fullPath: '/louisville'
+      preLoaderRoute: typeof LouisvilleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nashville': {
@@ -105,7 +198,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AtlantaRoute: AtlantaRoute,
+  ChattanoogaRoute: ChattanoogaRoute,
+  CincinnatiRoute: CincinnatiRoute,
   KnoxvilleRoute: KnoxvilleRoute,
+  LexingtonRoute: LexingtonRoute,
+  LouisvilleRoute: LouisvilleRoute,
   NashvilleRoute: NashvilleRoute,
 }
 export const routeTree = rootRouteImport

@@ -105,6 +105,64 @@ const AREA: Record<string, LatLng> = {
   "atl-downtown::Downtown Core": { lat: 33.7552, lng: -84.3904 },
   "atl-downtown::Castleberry": { lat: 33.7482, lng: -84.4012 },
   "atl-downtown::Underground": { lat: 33.7524, lng: -84.3902 },
+  // Chattanooga
+  "chat-downtown::Market Street": { lat: 35.0456, lng: -85.3096 },
+  "chat-downtown::Broad": { lat: 35.0428, lng: -85.3118 },
+  "chat-downtown::Bluff View": { lat: 35.0564, lng: -85.3052 },
+  "chat-southside::Main Street": { lat: 35.0368, lng: -85.3074 },
+  "chat-southside::MLK": { lat: 35.0386, lng: -85.2992 },
+  "chat-southside::12th Street": { lat: 35.0354, lng: -85.3018 },
+  "chat-northshore::Frazier": { lat: 35.0628, lng: -85.3086 },
+  "chat-northshore::Coolidge": { lat: 35.0636, lng: -85.3062 },
+  "chat-northshore::Station": { lat: 35.0612, lng: -85.3124 },
+  "chat-stelmo::St. Elmo Ave": { lat: 35.0174, lng: -85.3288 },
+  "chat-stelmo::Incline": { lat: 35.0162, lng: -85.3306 },
+  "chat-east::Hamilton Place": { lat: 35.0378, lng: -85.1564 },
+  "chat-east::Gunbarrel": { lat: 35.0486, lng: -85.1482 },
+  "chat-east::Brainerd": { lat: 35.0184, lng: -85.2126 },
+  // Lexington
+  "lex-downtown::Cheapside": { lat: 38.0478, lng: -84.4972 },
+  "lex-downtown::Short Street": { lat: 38.0466, lng: -84.4994 },
+  "lex-downtown::Vine": { lat: 38.0472, lng: -84.5026 },
+  "lex-distillery::Manchester": { lat: 38.0518, lng: -84.4834 },
+  "lex-distillery::North Limestone": { lat: 38.0576, lng: -84.4808 },
+  "lex-campus::Euclid": { lat: 38.0378, lng: -84.5036 },
+  "lex-campus::Woodland": { lat: 38.0364, lng: -84.4908 },
+  "lex-chevy::Chevy Chase": { lat: 38.0268, lng: -84.4902 },
+  "lex-chevy::Tates Creek": { lat: 38.0146, lng: -84.4948 },
+  "lex-hamburg::Hamburg": { lat: 38.0264, lng: -84.4228 },
+  "lex-hamburg::Palomar": { lat: 38.0418, lng: -84.4462 },
+  // Cincinnati (Ohio)
+  "cin-otr::Vine": { lat: 39.1124, lng: -84.5152 },
+  "cin-otr::Main": { lat: 39.1108, lng: -84.5124 },
+  "cin-otr::Findlay": { lat: 39.1156, lng: -84.5192 },
+  "cin-otr::Washington Park": { lat: 39.1098, lng: -84.5184 },
+  "cin-downtown::The Banks": { lat: 39.0958, lng: -84.5092 },
+  "cin-downtown::Fountain Square": { lat: 39.1014, lng: -84.5126 },
+  "cin-downtown::Core": { lat: 39.1028, lng: -84.5138 },
+  "cin-downtown::Mount Adams": { lat: 39.1086, lng: -84.4984 },
+  "cin-northside::Hamilton Ave": { lat: 39.1592, lng: -84.5406 },
+  "cin-northside::Spring Grove": { lat: 39.1568, lng: -84.5362 },
+  "cin-east::Oakley": { lat: 39.1524, lng: -84.4286 },
+  "cin-east::Hyde Park": { lat: 39.1396, lng: -84.4422 },
+  "cin-east::Mt Lookout": { lat: 39.1284, lng: -84.4196 },
+  "cin-east::East End": { lat: 39.1222, lng: -84.4418 },
+  "cin-clifton::Ludlow": { lat: 39.1486, lng: -84.5204 },
+  "cin-clifton::CUF": { lat: 39.1328, lng: -84.5168 },
+  // Louisville
+  "lou-downtown::Whiskey Row": { lat: 38.2568, lng: -85.7614 },
+  "lou-downtown::Fourth Street": { lat: 38.2496, lng: -85.7572 },
+  "lou-downtown::Museum Row": { lat: 38.2576, lng: -85.7648 },
+  "lou-nulu::East Market": { lat: 38.2534, lng: -85.7412 },
+  "lou-nulu::Main East": { lat: 38.2548, lng: -85.7386 },
+  "lou-highlands::Bardstown": { lat: 38.2394, lng: -85.7196 },
+  "lou-highlands::Baxter": { lat: 38.2368, lng: -85.7224 },
+  "lou-highlands::Barret": { lat: 38.2326, lng: -85.7248 },
+  "lou-germantown::Goss": { lat: 38.2264, lng: -85.7442 },
+  "lou-germantown::Burnett": { lat: 38.2248, lng: -85.7466 },
+  "lou-germantown::Logan": { lat: 38.2286, lng: -85.7394 },
+  "lou-crescent::Frankfort Ave": { lat: 38.2548, lng: -85.6984 },
+  "lou-crescent::Crescent Hill": { lat: 38.2532, lng: -85.6886 },
 };
 
 const PIN: Record<string, LatLng> = {
@@ -131,6 +189,17 @@ const PIN: Record<string, LatLng> = {
   "a-tabernacle": { lat: 33.7594, lng: -84.3922 },
   "a-clermont": { lat: 33.7736, lng: -84.3618 },
   "a-msr": { lat: 33.7848, lng: -84.3844 },
+  "c-signal": { lat: 35.0386, lng: -85.3124 },
+  "c-edwin": { lat: 35.0562, lng: -85.3088 },
+  "c-taco-stelmo": { lat: 35.0168, lng: -85.3274 },
+  "x-burl": { lat: 38.0516, lng: -84.4838 },
+  "x-two-keys": { lat: 38.0374, lng: -84.5042 },
+  "x-dudley": { lat: 38.0468, lng: -84.4998 },
+  "o-rhinegeist": { lat: 39.1172, lng: -84.5204 },
+  "o-ghost-baby": { lat: 39.1106, lng: -84.5122 },
+  "o-incline-ph": { lat: 39.1078, lng: -84.4992 },
+  "l-hell": { lat: 38.2564, lng: -85.7618 },
+  "l-silver-dollar": { lat: 38.2538, lng: -85.7016 },
 };
 
 function hash32(s: string) {
@@ -210,12 +279,32 @@ function isKnoxRegion(region: string) {
   );
 }
 
-type CityKey = "beach" | "knox" | "nash" | "atl";
+function isChatRegion(region: string) {
+  return region.startsWith("chat-");
+}
+
+function isLexRegion(region: string) {
+  return region.startsWith("lex-");
+}
+
+function isCinRegion(region: string) {
+  return region.startsWith("cin-");
+}
+
+function isLouRegion(region: string) {
+  return region.startsWith("lou-");
+}
+
+type CityKey = "beach" | "knox" | "nash" | "atl" | "chat" | "lex" | "cin" | "lou";
 
 function cityOf(region: string): CityKey {
   if (isBeachRegion(region)) return "beach";
   if (isNashRegion(region)) return "nash";
   if (isAtlRegion(region)) return "atl";
+  if (isChatRegion(region)) return "chat";
+  if (isLexRegion(region)) return "lex";
+  if (isCinRegion(region)) return "cin";
+  if (isLouRegion(region)) return "lou";
   if (isKnoxRegion(region)) return "knox";
   return "knox";
 }
@@ -225,6 +314,10 @@ const BBOX: Record<CityKey, { lat0: number; lat1: number; lng0: number; lng1: nu
   knox: { lat0: 35.85, lat1: 36.12, lng0: -84.22, lng1: -83.82, fallback: { lat: 35.9606, lng: -83.9208 } },
   nash: { lat0: 36.08, lat1: 36.22, lng0: -86.86, lng1: -86.70, fallback: { lat: 36.162, lng: -86.778 } },
   atl: { lat0: 33.72, lat1: 33.87, lng0: -84.45, lng1: -84.32, fallback: { lat: 33.76, lng: -84.388 } },
+  chat: { lat0: 34.99, lat1: 35.09, lng0: -85.36, lng1: -85.13, fallback: { lat: 35.0456, lng: -85.3096 } },
+  lex: { lat0: 37.99, lat1: 38.09, lng0: -84.55, lng1: -84.41, fallback: { lat: 38.047, lng: -84.497 } },
+  cin: { lat0: 39.08, lat1: 39.18, lng0: -84.56, lng1: -84.40, fallback: { lat: 39.103, lng: -84.512 } },
+  lou: { lat0: 38.20, lat1: 38.28, lng0: -85.80, lng1: -85.66, fallback: { lat: 38.254, lng: -85.758 } },
 };
 
 function clamp(p: Place, pt: LatLng): LatLng {
@@ -374,6 +467,155 @@ function fromAtlAddress(address: string): LatLng | null {
   return null;
 }
 
+function fromChatAddress(address: string): LatLng | null {
+  const broad = address.match(/(\d{2,4})\s+Broad/i);
+  if (broad) {
+    const n = Number(broad[1]);
+    return { lat: 35.055 - Math.min(n, 1800) * 0.000008, lng: -85.311 };
+  }
+  const market = address.match(/(\d{3,4})\s+Market/i);
+  if (market) {
+    const n = Number(market[1]);
+    return { lat: 35.055 - Math.min(n, 1400) * 0.00001, lng: -85.3096 };
+  }
+  const main = address.match(/(\d{1,4})\s+(?:E\s+|W\s+)?Main/i);
+  if (main) {
+    return { lat: 35.0368, lng: -85.3074 };
+  }
+  const frazier = address.match(/(\d{2,4})\s+Frazier/i);
+  if (frazier) {
+    return { lat: 35.0628, lng: -85.3086 };
+  }
+  const stelmo = address.match(/St\.?\s*Elmo|Tennessee Ave/i);
+  if (stelmo) {
+    return { lat: 35.0174, lng: -85.3288 };
+  }
+  const hixson = address.match(/Hixson/i);
+  if (hixson) {
+    return { lat: 35.0684, lng: -85.3012 };
+  }
+  const hamilton = address.match(/Hamilton Place/i);
+  if (hamilton) {
+    return { lat: 35.0378, lng: -85.1564 };
+  }
+  return null;
+}
+
+function fromLexAddress(address: string): LatLng | null {
+  const short = address.match(/(\d{2,4})\s+W?\s*Short/i);
+  if (short) {
+    return { lat: 38.0466, lng: -84.4994 };
+  }
+  const vine = address.match(/(\d{2,4})\s+(?:E\s+|W\s+)?Vine/i);
+  if (vine) {
+    return { lat: 38.0472, lng: -84.5026 };
+  }
+  const manchester = address.match(/(\d{2,4})\s+Manchester/i);
+  if (manchester) {
+    const n = Number(manchester[1]);
+    return { lat: 38.052, lng: -84.490 + Math.min(n, 1200) * 0.000008 };
+  }
+  const lime = address.match(/(\d{2,4})\s+(?:N\s+|S\s+)?Limestone/i);
+  if (lime) {
+    const n = Number(lime[1]);
+    const south = /S\s+Limestone/i.test(address);
+    return south ? { lat: 38.0378, lng: -84.5036 } : { lat: 38.048 + Math.min(n, 700) * 0.000015, lng: -84.481 };
+  }
+  const euclid = address.match(/Euclid/i);
+  if (euclid) {
+    return { lat: 38.0378, lng: -84.5036 };
+  }
+  const tates = address.match(/Tates Creek/i);
+  if (tates) {
+    return { lat: 38.0146, lng: -84.4948 };
+  }
+  const hamburg = address.match(/Hamburg|Sir Barton|Palomar/i);
+  if (hamburg) {
+    return { lat: 38.028, lng: -84.428 };
+  }
+  return null;
+}
+
+function fromCinAddress(address: string): LatLng | null {
+  const vine = address.match(/(\d{3,4})\s+Vine/i);
+  if (vine) {
+    const n = Number(vine[1]);
+    return { lat: 39.101 + Math.min(n, 1400) * 0.00001, lng: -84.515 };
+  }
+  const main = address.match(/(\d{3,4})\s+Main/i);
+  if (main) {
+    const n = Number(main[1]);
+    return { lat: 39.101 + Math.min(n, 1400) * 0.00001, lng: -84.5124 };
+  }
+  const elm = address.match(/(\d{3,4})\s+Elm/i);
+  if (elm) {
+    return { lat: 39.114, lng: -84.519 };
+  }
+  const hamilton = address.match(/(\d{3,4})\s+Hamilton/i);
+  if (hamilton) {
+    return { lat: 39.159, lng: -84.5406 };
+  }
+  const madison = address.match(/(\d{3,4})\s+Madison/i);
+  if (madison) {
+    const n = Number(madison[1]);
+    if (n >= 3000) return { lat: 39.152, lng: -84.429 };
+    return { lat: 39.14, lng: -84.442 };
+  }
+  const ludlow = address.match(/Ludlow/i);
+  if (ludlow) {
+    return { lat: 39.1486, lng: -84.5204 };
+  }
+  const banks = address.match(/Joe Nuxhall|The Banks|Broadway/i);
+  if (banks) {
+    return { lat: 39.0958, lng: -84.5092 };
+  }
+  const hatch = address.match(/Hatch|Celestial/i);
+  if (hatch) {
+    return { lat: 39.1086, lng: -84.4984 };
+  }
+  const springGrove = address.match(/Spring Grove|Blue Rock/i);
+  if (springGrove) {
+    return { lat: 39.1568, lng: -84.5362 };
+  }
+  return null;
+}
+
+function fromLouAddress(address: string): LatLng | null {
+  const main = address.match(/(\d{2,4})\s+(?:W\s+|E\s+)?Main/i);
+  if (main) {
+    const n = Number(main[1]);
+    const east = /E\s+Main/i.test(address);
+    if (east && n >= 400) return { lat: 38.2548, lng: -85.742 };
+    return { lat: 38.2568, lng: -85.7614 };
+  }
+  const market = address.match(/(\d{2,4})\s+E\s+Market/i);
+  if (market) {
+    const n = Number(market[1]);
+    return { lat: 38.2534, lng: -85.758 + Math.min(n, 1100) * 0.000016 };
+  }
+  const bardstown = address.match(/(\d{3,4})\s+Bardstown/i);
+  if (bardstown) {
+    const n = Number(bardstown[1]);
+    const t = Math.min(1, Math.max(0, (n - 1000) / 1200));
+    return { lat: 38.246 - t * 0.02, lng: -85.728 + t * 0.012 };
+  }
+  const frankfort = address.match(/(\d{3,4})\s+Frankfort/i);
+  if (frankfort) {
+    const n = Number(frankfort[1]);
+    const t = Math.min(1, Math.max(0, (n - 1700) / 1000));
+    return { lat: 38.254, lng: -85.710 + t * 0.02 };
+  }
+  const fourth = address.match(/(\d{2,4})\s+S\s+4th/i);
+  if (fourth) {
+    return { lat: 38.2496, lng: -85.7572 };
+  }
+  const goss = address.match(/Goss|Burnett/i);
+  if (goss) {
+    return { lat: 38.226, lng: -85.745 };
+  }
+  return null;
+}
+
 export function placeCoords(p: Place): LatLng {
   const pinned = PIN[p.id];
   if (pinned) return jitter(p.id, clamp(p, pinned));
@@ -389,6 +631,18 @@ export function placeCoords(p: Place): LatLng {
   } else if (city === "atl") {
     const atl = fromAtlAddress(p.address);
     if (atl) return jitter(p.id, clamp(p, atl));
+  } else if (city === "chat") {
+    const chat = fromChatAddress(p.address);
+    if (chat) return jitter(p.id, clamp(p, chat));
+  } else if (city === "lex") {
+    const lex = fromLexAddress(p.address);
+    if (lex) return jitter(p.id, clamp(p, lex));
+  } else if (city === "cin") {
+    const cin = fromCinAddress(p.address);
+    if (cin) return jitter(p.id, clamp(p, cin));
+  } else if (city === "lou") {
+    const lou = fromLouAddress(p.address);
+    if (lou) return jitter(p.id, clamp(p, lou));
   } else {
     const knox = fromKnoxAddress(p.address, p.area);
     if (knox) return jitter(p.id, clamp(p, knox));

@@ -5,6 +5,10 @@ export const CITIES = [
   { id: "knoxville", href: "/knoxville", label: "Knoxville", short: "Knox" },
   { id: "nashville", href: "/nashville", label: "Nashville", short: "Nash" },
   { id: "atlanta", href: "/atlanta", label: "Atlanta", short: "ATL" },
+  { id: "chattanooga", href: "/chattanooga", label: "Chattanooga", short: "Chat" },
+  { id: "lexington", href: "/lexington", label: "Lexington", short: "Lex" },
+  { id: "louisville", href: "/louisville", label: "Louisville", short: "Lou" },
+  { id: "cincinnati", href: "/cincinnati", label: "Cincinnati", short: "Cincy" },
 ] as const;
 
 export type CityId = (typeof CITIES)[number]["id"];
@@ -23,7 +27,7 @@ export function CityDock({
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-bg from-70% to-transparent px-3 pb-[max(4.75rem,env(safe-area-inset-bottom))] pt-3">
       <nav
-        className="mx-auto mb-2 flex max-w-2xl overflow-hidden rounded-lg border border-line bg-surface"
+        className="mx-auto mb-2 grid max-w-2xl grid-cols-4 overflow-hidden rounded-lg border border-line bg-surface"
         aria-label="City"
       >
         {CITIES.map((c) => {
@@ -34,7 +38,7 @@ export function CityDock({
               href={c.href}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "inline-flex h-12 min-w-0 flex-1 items-center justify-center px-1 text-[11px] font-medium no-underline sm:px-2 sm:text-sm",
+                "inline-flex h-11 min-w-0 items-center justify-center px-1 text-[11px] font-medium no-underline sm:h-12 sm:text-sm",
                 on ? "bg-accent text-bg" : "text-muted",
               )}
             >
@@ -54,7 +58,7 @@ export function CityDock({
             href={tabHref(r.id)}
             aria-current={region === r.id ? "page" : undefined}
             className={cn(
-              "inline-flex h-12 min-w-0 flex-1 items-center justify-center px-1 text-[11px] font-medium no-underline sm:text-sm",
+              "inline-flex h-11 min-w-0 flex-1 items-center justify-center px-1 text-[11px] font-medium no-underline sm:h-12 sm:text-sm",
               region === r.id ? "bg-accent text-bg" : "text-muted",
             )}
           >

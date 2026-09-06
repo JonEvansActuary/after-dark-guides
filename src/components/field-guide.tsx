@@ -159,7 +159,7 @@ export function FieldGuide({
   }, [region, scope, view, area]);
 
   return (
-    <div className="min-h-screen bg-bg pb-56 text-fg">
+    <div className="min-h-screen bg-bg pb-72 text-fg">
       <div className="mx-auto max-w-6xl px-4 pt-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">

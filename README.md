@@ -1,8 +1,12 @@
 # After Dark
 
-Four nightlife field guides, same scores (looks draw + women:men):
+Nightlife field guides, same scores (looks draw + women:men):
 
 - **Beach** — Sunny Isles → South Beach (`/`)
 - **Knoxville** — downtown + Knox County (`/knoxville`)
 - **Nashville** — Broadway, Gulch, East, Midtown, South (`/nashville`)
 - **Atlanta** — Midtown, Buckhead, Eastside, West Midtown, Downtown (`/atlanta`)
+- **Chattanooga** — Downtown, Southside, North Shore, St. Elmo, East (`/chattanooga`)
+- **Lexington** — Downtown, Distillery District, Campus, Chevy Chase, Hamburg (`/lexington`)
+- **Louisville** — Whiskey Row, NuLu, Highlands, Germantown, Crescent Hill (`/louisville`)
+- **Cincinnati** — OTR, Downtown/Banks/Mt. Adams, Northside, East, Clifton (`/cincinnati`)
