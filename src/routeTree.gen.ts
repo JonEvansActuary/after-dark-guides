@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AshevilleRouteImport } from './routes/asheville'
 import { Route as AtlantaRouteImport } from './routes/atlanta'
 import { Route as ChattanoogaRouteImport } from './routes/chattanooga'
 import { Route as CincinnatiRouteImport } from './routes/cincinnati'
@@ -17,10 +18,16 @@ import { Route as KnoxvilleRouteImport } from './routes/knoxville'
 import { Route as LexingtonRouteImport } from './routes/lexington'
 import { Route as LouisvilleRouteImport } from './routes/louisville'
 import { Route as NashvilleRouteImport } from './routes/nashville'
+import { Route as OrlandoRouteImport } from './routes/orlando'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AshevilleRoute = AshevilleRouteImport.update({
+  id: '/asheville',
+  path: '/asheville',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AtlantaRoute = AtlantaRouteImport.update({
@@ -58,9 +65,15 @@ const NashvilleRoute = NashvilleRouteImport.update({
   path: '/nashville',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrlandoRoute = OrlandoRouteImport.update({
+  id: '/orlando',
+  path: '/orlando',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/asheville': typeof AshevilleRoute
   '/atlanta': typeof AtlantaRoute
   '/chattanooga': typeof ChattanoogaRoute
   '/cincinnati': typeof CincinnatiRoute
@@ -68,9 +81,11 @@ export interface FileRoutesByFullPath {
   '/lexington': typeof LexingtonRoute
   '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
+  '/orlando': typeof OrlandoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/asheville': typeof AshevilleRoute
   '/atlanta': typeof AtlantaRoute
   '/chattanooga': typeof ChattanoogaRoute
   '/cincinnati': typeof CincinnatiRoute
@@ -78,10 +93,12 @@ export interface FileRoutesByTo {
   '/lexington': typeof LexingtonRoute
   '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
+  '/orlando': typeof OrlandoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/asheville': typeof AshevilleRoute
   '/atlanta': typeof AtlantaRoute
   '/chattanooga': typeof ChattanoogaRoute
   '/cincinnati': typeof CincinnatiRoute
@@ -89,11 +106,13 @@ export interface FileRoutesById {
   '/lexington': typeof LexingtonRoute
   '/louisville': typeof LouisvilleRoute
   '/nashville': typeof NashvilleRoute
+  '/orlando': typeof OrlandoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/asheville'
     | '/atlanta'
     | '/chattanooga'
     | '/cincinnati'
@@ -101,9 +120,11 @@ export interface FileRouteTypes {
     | '/lexington'
     | '/louisville'
     | '/nashville'
+    | '/orlando'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/asheville'
     | '/atlanta'
     | '/chattanooga'
     | '/cincinnati'
@@ -111,9 +132,11 @@ export interface FileRouteTypes {
     | '/lexington'
     | '/louisville'
     | '/nashville'
+    | '/orlando'
   id:
     | '__root__'
     | '/'
+    | '/asheville'
     | '/atlanta'
     | '/chattanooga'
     | '/cincinnati'
@@ -121,10 +144,12 @@ export interface FileRouteTypes {
     | '/lexington'
     | '/louisville'
     | '/nashville'
+    | '/orlando'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AshevilleRoute: typeof AshevilleRoute
   AtlantaRoute: typeof AtlantaRoute
   ChattanoogaRoute: typeof ChattanoogaRoute
   CincinnatiRoute: typeof CincinnatiRoute
@@ -132,6 +157,7 @@ export interface RootRouteChildren {
   LexingtonRoute: typeof LexingtonRoute
   LouisvilleRoute: typeof LouisvilleRoute
   NashvilleRoute: typeof NashvilleRoute
+  OrlandoRoute: typeof OrlandoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -141,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asheville': {
+      id: '/asheville'
+      path: '/asheville'
+      fullPath: '/asheville'
+      preLoaderRoute: typeof AshevilleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/atlanta': {
@@ -192,11 +225,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NashvilleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orlando': {
+      id: '/orlando'
+      path: '/orlando'
+      fullPath: '/orlando'
+      preLoaderRoute: typeof OrlandoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AshevilleRoute: AshevilleRoute,
   AtlantaRoute: AtlantaRoute,
   ChattanoogaRoute: ChattanoogaRoute,
   CincinnatiRoute: CincinnatiRoute,
@@ -204,6 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   LexingtonRoute: LexingtonRoute,
   LouisvilleRoute: LouisvilleRoute,
   NashvilleRoute: NashvilleRoute,
+  OrlandoRoute: OrlandoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

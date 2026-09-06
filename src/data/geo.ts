@@ -163,6 +163,36 @@ const AREA: Record<string, LatLng> = {
   "lou-germantown::Logan": { lat: 38.2286, lng: -85.7394 },
   "lou-crescent::Frankfort Ave": { lat: 38.2548, lng: -85.6984 },
   "lou-crescent::Crescent Hill": { lat: 38.2532, lng: -85.6886 },
+  // Asheville
+  "ash-downtown::Pack Square": { lat: 35.5951, lng: -82.5515 },
+  "ash-downtown::Lexington": { lat: 35.5958, lng: -82.5535 },
+  "ash-downtown::Broadway": { lat: 35.5975, lng: -82.551 },
+  "ash-downtown::Patton": { lat: 35.5945, lng: -82.556 },
+  "ash-slope::Coxe": { lat: 35.5865, lng: -82.5545 },
+  "ash-slope::Collier": { lat: 35.585, lng: -82.5565 },
+  "ash-slope::Biltmore Ave": { lat: 35.5905, lng: -82.551 },
+  "ash-west::Haywood Rd": { lat: 35.5788, lng: -82.589 },
+  "ash-west::Westville": { lat: 35.5785, lng: -82.598 },
+  "ash-rad::Clingman": { lat: 35.5875, lng: -82.566 },
+  "ash-rad::Roberts": { lat: 35.587, lng: -82.57 },
+  "ash-rad::Riverside": { lat: 35.589, lng: -82.5715 },
+  "ash-biltmore::Village": { lat: 35.5665, lng: -82.5425 },
+  "ash-biltmore::Estate": { lat: 35.555, lng: -82.551 },
+  // Orlando
+  "orl-downtown::Church Street": { lat: 28.5414, lng: -81.3802 },
+  "orl-downtown::Orange": { lat: 28.542, lng: -81.3792 },
+  "orl-downtown::Wall Street": { lat: 28.5426, lng: -81.3806 },
+  "orl-downtown::Pine": { lat: 28.5418, lng: -81.378 },
+  "orl-thornton::Washington": { lat: 28.5436, lng: -81.368 },
+  "orl-thornton::Eola": { lat: 28.5428, lng: -81.3728 },
+  "orl-thornton::Milk District": { lat: 28.553, lng: -81.351 },
+  "orl-mills::Mills Ave": { lat: 28.555, lng: -81.3645 },
+  "orl-mills::Colonial": { lat: 28.5534, lng: -81.368 },
+  "orl-ivanhoe::Orange North": { lat: 28.56, lng: -81.379 },
+  "orl-ivanhoe::Virginia": { lat: 28.562, lng: -81.373 },
+  "orl-idrive::I-Drive": { lat: 28.4515, lng: -81.471 },
+  "orl-idrive::Dr Phillips": { lat: 28.45, lng: -81.489 },
+  "orl-idrive::CityWalk": { lat: 28.4734, lng: -81.4674 },
 };
 
 const PIN: Record<string, LatLng> = {
@@ -200,6 +230,12 @@ const PIN: Record<string, LatLng> = {
   "o-incline-ph": { lat: 39.1078, lng: -84.4992 },
   "l-hell": { lat: 38.2564, lng: -85.7618 },
   "l-silver-dollar": { lat: 38.2538, lng: -85.7016 },
+  "s-sovereign": { lat: 35.5954, lng: -82.5512 },
+  "s-burial": { lat: 35.5852, lng: -82.5568 },
+  "s-admiral": { lat: 35.5786, lng: -82.5882 },
+  "r-hanson": { lat: 28.5419, lng: -81.3776 },
+  "r-ottos": { lat: 28.5532, lng: -81.3514 },
+  "r-wallys": { lat: 28.5548, lng: -81.3646 },
 };
 
 function hash32(s: string) {
@@ -295,7 +331,15 @@ function isLouRegion(region: string) {
   return region.startsWith("lou-");
 }
 
-type CityKey = "beach" | "knox" | "nash" | "atl" | "chat" | "lex" | "cin" | "lou";
+function isAshRegion(region: string) {
+  return region.startsWith("ash-");
+}
+
+function isOrlRegion(region: string) {
+  return region.startsWith("orl-");
+}
+
+type CityKey = "beach" | "knox" | "nash" | "atl" | "chat" | "lex" | "cin" | "lou" | "ash" | "orl";
 
 function cityOf(region: string): CityKey {
   if (isBeachRegion(region)) return "beach";
@@ -305,6 +349,8 @@ function cityOf(region: string): CityKey {
   if (isLexRegion(region)) return "lex";
   if (isCinRegion(region)) return "cin";
   if (isLouRegion(region)) return "lou";
+  if (isAshRegion(region)) return "ash";
+  if (isOrlRegion(region)) return "orl";
   if (isKnoxRegion(region)) return "knox";
   return "knox";
 }
@@ -318,6 +364,8 @@ const BBOX: Record<CityKey, { lat0: number; lat1: number; lng0: number; lng1: nu
   lex: { lat0: 37.99, lat1: 38.09, lng0: -84.55, lng1: -84.41, fallback: { lat: 38.047, lng: -84.497 } },
   cin: { lat0: 39.08, lat1: 39.18, lng0: -84.56, lng1: -84.40, fallback: { lat: 39.103, lng: -84.512 } },
   lou: { lat0: 38.20, lat1: 38.28, lng0: -85.80, lng1: -85.66, fallback: { lat: 38.254, lng: -85.758 } },
+  ash: { lat0: 35.53, lat1: 35.63, lng0: -82.61, lng1: -82.50, fallback: { lat: 35.595, lng: -82.551 } },
+  orl: { lat0: 28.425, lat1: 28.59, lng0: -81.505, lng1: -81.335, fallback: { lat: 28.541, lng: -81.379 } },
 };
 
 function clamp(p: Place, pt: LatLng): LatLng {
@@ -616,6 +664,131 @@ function fromLouAddress(address: string): LatLng | null {
   return null;
 }
 
+function fromAshAddress(address: string): LatLng | null {
+  const haywoodRd = address.match(/(\d{2,4})\s+Haywood Rd/i);
+  if (haywoodRd) {
+    const n = Number(haywoodRd[1]);
+    const t = Math.min(1, Math.max(0, (n - 300) / 500));
+    return { lat: 35.579, lng: -82.582 - t * 0.02 };
+  }
+  if (/Haywood St/i.test(address)) {
+    return { lat: 35.5952, lng: -82.5548 };
+  }
+  const market = address.match(/(\d{1,3})\s+(?:N\s+|S\s+)?Market/i);
+  if (market) {
+    const n = Number(market[1]);
+    const south = /S\s+Market/i.test(address);
+    return { lat: 35.5958 + (south ? -n * 0.00004 : n * 0.00003), lng: -82.5514 };
+  }
+  const lex = address.match(/(\d{1,3})\s+(?:N\s+|S\s+)?Lexington/i);
+  if (lex) {
+    const n = Number(lex[1]);
+    return { lat: 35.5958 + n * 0.00002, lng: -82.5535 };
+  }
+  const broadway = address.match(/(\d{1,3})\s+Broadway/i);
+  if (broadway) {
+    return { lat: 35.5975, lng: -82.551 };
+  }
+  const patton = address.match(/(\d{1,3})\s+Patton/i);
+  if (patton) {
+    return { lat: 35.5945, lng: -82.556 };
+  }
+  const coxe = address.match(/Coxe|Collier|Hilliard|Buxton Ave|Craven/i);
+  if (coxe) {
+    return { lat: 35.5865, lng: -82.5548 };
+  }
+  const clingman = address.match(/Clingman|Banks Ave|Depot St|Adams St/i);
+  if (clingman) {
+    return { lat: 35.5875, lng: -82.566 };
+  }
+  const riverside = address.match(/Riverside|Paynes|Roberts/i);
+  if (riverside) {
+    return { lat: 35.5885, lng: -82.5708 };
+  }
+  const biltmoreAve = address.match(/(\d{1,3})\s+Biltmore Ave/i);
+  if (biltmoreAve) {
+    const n = Number(biltmoreAve[1]);
+    if (n >= 80) return { lat: 35.5905, lng: -82.551 };
+    return { lat: 35.594, lng: -82.5512 };
+  }
+  if (/Lodge|Antler Hill|Dairy Rd/i.test(address)) {
+    return { lat: 35.555, lng: -82.551 };
+  }
+  if (/Boston Way|Brook St|All Souls|Hendersonville Rd|Biltmore Station/i.test(address)) {
+    return { lat: 35.5665, lng: -82.5425 };
+  }
+  if (/Montford/i.test(address)) {
+    return { lat: 35.6032, lng: -82.5614 };
+  }
+  if (/Kavenel/i.test(address)) {
+    return { lat: 35.5784, lng: -82.597 };
+  }
+  return null;
+}
+
+function fromOrlAddress(address: string): LatLng | null {
+  const intl = address.match(/(\d{3,5})\s+International/i);
+  if (intl) {
+    const n = Number(intl[1]);
+    const t = Math.min(1, Math.max(0, (n - 7400) / 1800));
+    return { lat: 28.457 - t * 0.02, lng: -81.47 };
+  }
+  if (/Universal Blvd|CityWalk/i.test(address)) {
+    return { lat: 28.4734, lng: -81.4674 };
+  }
+  const sand = address.match(/Sand Lake|Dr Phillips/i);
+  if (sand) {
+    return { lat: 28.45, lng: -81.489 };
+  }
+  const mills = address.match(/(\d{3,4})\s+N\s+Mills/i);
+  if (mills) {
+    const n = Number(mills[1]);
+    return { lat: 28.548 + Math.min(n, 1600) * 0.000008, lng: -81.3646 };
+  }
+  const orange = address.match(/(\d{2,4})\s+(?:N\s+|S\s+)?Orange/i);
+  if (orange) {
+    const n = Number(orange[1]);
+    const south = /S\s+Orange/i.test(address);
+    if (south) return { lat: 28.538 - Math.min(n, 400) * 0.00001, lng: -81.3792 };
+    if (n >= 1100) return { lat: 28.547 + Math.min(n - 1100, 1000) * 0.00002, lng: -81.379 };
+    return { lat: 28.542 + Math.min(n, 200) * 0.00002, lng: -81.3792 };
+  }
+  const church = address.match(/Church St/i);
+  if (church) {
+    return { lat: 28.5414, lng: -81.3802 };
+  }
+  const wash = address.match(/Washington St|Shine Ave/i);
+  if (wash) {
+    return { lat: 28.5436, lng: -81.368 };
+  }
+  const colonial = address.match(/Colonial/i);
+  if (colonial) {
+    return { lat: 28.5534, lng: -81.36 };
+  }
+  if (/Corrine/i.test(address)) {
+    return { lat: 28.566, lng: -81.345 };
+  }
+  if (/Virginia Dr/i.test(address)) {
+    return { lat: 28.562, lng: -81.373 };
+  }
+  if (/Eola|Central Blvd/i.test(address)) {
+    return { lat: 28.5428, lng: -81.3728 };
+  }
+  if (/Magnolia|Pine St/i.test(address)) {
+    return { lat: 28.5418, lng: -81.378 };
+  }
+  if (/Winter Park Rd/i.test(address)) {
+    return { lat: 28.569, lng: -81.357 };
+  }
+  if (/Wall St/i.test(address)) {
+    return { lat: 28.5426, lng: -81.3806 };
+  }
+  if (/Texas Ave/i.test(address)) {
+    return { lat: 28.451, lng: -81.49 };
+  }
+  return null;
+}
+
 export function placeCoords(p: Place): LatLng {
   const pinned = PIN[p.id];
   if (pinned) return jitter(p.id, clamp(p, pinned));
@@ -643,6 +816,12 @@ export function placeCoords(p: Place): LatLng {
   } else if (city === "lou") {
     const lou = fromLouAddress(p.address);
     if (lou) return jitter(p.id, clamp(p, lou));
+  } else if (city === "ash") {
+    const ash = fromAshAddress(p.address);
+    if (ash) return jitter(p.id, clamp(p, ash));
+  } else if (city === "orl") {
+    const orl = fromOrlAddress(p.address);
+    if (orl) return jitter(p.id, clamp(p, orl));
   } else {
     const knox = fromKnoxAddress(p.address, p.area);
     if (knox) return jitter(p.id, clamp(p, knox));

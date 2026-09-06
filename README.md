@@ -10,3 +10,6 @@ Nightlife field guides, same scores (looks draw + women:men):
 - **Lexington** — Downtown, Distillery District, Campus, Chevy Chase, Hamburg (`/lexington`)
 - **Louisville** — Whiskey Row, NuLu, Highlands, Germantown, Crescent Hill (`/louisville`)
 - **Cincinnati** — OTR, Downtown/Banks/Mt. Adams, Northside, East, Clifton (`/cincinnati`)
+- **Asheville** — Downtown, South Slope, West, RAD, Biltmore (`/asheville`)
+- **Orlando** — Downtown, Thornton Park, Mills 50, Ivanhoe, I-Drive / CityWalk (`/orlando`)
+

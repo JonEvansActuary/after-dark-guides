@@ -9,6 +9,8 @@ export const CITIES = [
   { id: "lexington", href: "/lexington", label: "Lexington", short: "Lex" },
   { id: "louisville", href: "/louisville", label: "Louisville", short: "Lou" },
   { id: "cincinnati", href: "/cincinnati", label: "Cincinnati", short: "Cincy" },
+  { id: "asheville", href: "/asheville", label: "Asheville", short: "AVL" },
+  { id: "orlando", href: "/orlando", label: "Orlando", short: "ORL" },
 ] as const;
 
 export type CityId = (typeof CITIES)[number]["id"];
@@ -27,7 +29,7 @@ export function CityDock({
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-bg from-70% to-transparent px-3 pb-[max(4.75rem,env(safe-area-inset-bottom))] pt-3">
       <nav
-        className="mx-auto mb-2 grid max-w-2xl grid-cols-4 overflow-hidden rounded-lg border border-line bg-surface"
+        className="mx-auto mb-2 grid max-w-3xl grid-cols-5 overflow-hidden rounded-lg border border-line bg-surface"
         aria-label="City"
       >
         {CITIES.map((c) => {
@@ -38,18 +40,18 @@ export function CityDock({
               href={c.href}
               aria-current={on ? "page" : undefined}
               className={cn(
-                "inline-flex h-11 min-w-0 items-center justify-center px-1 text-[11px] font-medium no-underline sm:h-12 sm:text-sm",
+                "inline-flex h-11 min-w-0 items-center justify-center px-0.5 text-[11px] font-medium no-underline sm:h-12 sm:text-xs lg:text-sm",
                 on ? "bg-accent text-bg" : "text-muted",
               )}
             >
-              <span className="sm:hidden">{c.short}</span>
-              <span className="hidden sm:inline">{c.label}</span>
+              <span className="xl:hidden">{c.short}</span>
+              <span className="hidden xl:inline">{c.label}</span>
             </a>
           );
         })}
       </nav>
       <nav
-        className="mx-auto flex max-w-2xl overflow-hidden rounded-lg border border-line bg-surface"
+        className="mx-auto flex max-w-3xl overflow-hidden rounded-lg border border-line bg-surface"
         aria-label="Region"
       >
         {regions.map((r) => (
