@@ -1,6 +1,6 @@
 # After Dark
 
-Nightlife field guides, same scores (looks draw + women:men). Tap a listing to open the map; Directory takes you back. Each city has an **All** tab for a combined list.
+Nightlife field guides, same scores (looks draw + women:men). Tap a listing to open the map; Directory takes you back. On the map, tap a pin then **Details** for the full notes. Each city has an **All** tab for a combined list.
 
 - **Beach** — Sunny Isles → South Beach (`/`)
 - **Knoxville** — downtown + Knox County (`/knoxville`)

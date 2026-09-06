@@ -32,6 +32,7 @@ export type GuideSearch = {
   area?: string;
   q?: string;
   place?: string;
+  detail?: boolean;
 };
 
 export function parseGuideSearch(
@@ -53,13 +54,17 @@ export function parseGuideSearch(
     next.place = raw.place.trim();
     next.view = "map";
   }
+  if (raw.detail === "1" || raw.detail === "true" || raw.detail === true || raw.detail === 1) {
+    next.detail = true;
+    next.view = "map";
+  }
   return next;
 }
 
 export function guideHref(
   path: string,
   defaultRegion: string,
-  next: { region?: string; scope?: Scope; view?: ViewKey; area?: string; q?: string; place?: string },
+  next: { region?: string; scope?: Scope; view?: ViewKey; area?: string; q?: string; place?: string; detail?: boolean },
 ) {
   const p = new URLSearchParams();
   if (next.region && next.region !== defaultRegion) p.set("region", next.region);
@@ -68,6 +73,7 @@ export function guideHref(
   if (next.area && next.area !== "All") p.set("area", next.area);
   if (next.q?.trim()) p.set("q", next.q.trim());
   if (next.place?.trim()) p.set("place", next.place.trim());
+  if (next.detail && next.place?.trim()) p.set("detail", "1");
   const s = p.toString();
   return s ? `${path}?${s}` : path;
 }
@@ -114,7 +120,6 @@ export function FieldGuide({
   const [minRatio, setMinRatio] = useState(0);
   const [sort, setSort] = useState<SortKey>("combined");
   const [open, setOpen] = useState<Place | null>(placed ?? null);
-  const [full, setFull] = useState(false);
   const [method, setMethod] = useState(false);
   const lastPlace = useRef<string | undefined>(undefined);
   const mapBox = useRef<HTMLDivElement>(null);
@@ -124,22 +129,17 @@ export function FieldGuide({
       if (search.place !== lastPlace.current) {
         lastPlace.current = search.place;
         const v = venues.find((x) => x.id === search.place);
-        if (v) {
-          setOpen(v);
-          setFull(false);
-        }
+        if (v) setOpen(v);
       }
     } else if (lastPlace.current) {
       lastPlace.current = undefined;
       setOpen(null);
-      setFull(false);
     }
   }, [search.place, venues]);
 
   const clearPick = () => {
     lastPlace.current = undefined;
     setOpen(null);
-    setFull(false);
   };
 
   const regionTab = (id: string) => regions.find((r) => r.id === id)?.tab ?? id;
@@ -162,8 +162,15 @@ export function FieldGuide({
     [venues, region, citywide],
   );
 
-  const hrefFor = (next: { region?: string; scope?: Scope; view?: ViewKey; area?: string; q?: string; place?: string }) =>
-    guideHref(path, defaultRegion, next);
+  const hrefFor = (next: {
+    region?: string;
+    scope?: Scope;
+    view?: ViewKey;
+    area?: string;
+    q?: string;
+    place?: string;
+    detail?: boolean;
+  }) => guideHref(path, defaultRegion, next);
 
   const placeHref = (v: Place) => hrefFor({ region, scope, view: "map", place: v.id });
   const overline = (v: Place) => (citywide ? `${regionTab(v.region)} · ${v.area}` : v.area);
@@ -218,6 +225,11 @@ export function FieldGuide({
   const areaHref = (a: string) => hrefFor({ region, scope, view, area: a, q });
   const listHref = viewHref("list");
   const dockRegions = [{ id: ALL_REGION, tab: "All" }, ...regions];
+  const showDetail = Boolean(search.detail && open && search.place === open.id);
+  const pickCloseHref = hrefFor({ region, scope, view: "map", area, q });
+  const detailHrefFor = (v: Place) =>
+    hrefFor({ region, scope, view: "map", area, q, place: v.id, detail: true });
+  const detailCloseHrefFor = (v: Place) => hrefFor({ region, scope, view: "map", area, q, place: v.id });
 
   useLayoutEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -409,9 +421,9 @@ export function FieldGuide({
                       <MapPick
                         venue={open}
                         listHref={listHref}
-                        closeHref={hrefFor({ region, scope, view: "map", area, q })}
+                        detailHref={detailHrefFor(open)}
+                        closeHref={pickCloseHref}
                         onClose={clearPick}
-                        onDetails={() => setFull(true)}
                       />
                     </div>
                   ) : (
@@ -440,7 +452,7 @@ export function FieldGuide({
         ) : null}
       </main>
 
-      {full && open ? <VenueDetail venue={open} onClose={() => setFull(false)} /> : null}
+      {showDetail && open ? <VenueDetail venue={open} closeHref={detailCloseHrefFor(open)} /> : null}
       <CityDock current={city} regions={dockRegions} region={region} tabHref={tabHref} />
     </div>
   );
@@ -458,15 +470,15 @@ function unique(items: string[]) {
 function MapPick({
   venue,
   listHref,
+  detailHref,
   closeHref,
   onClose,
-  onDetails,
 }: {
   venue: Place;
   listHref: string;
+  detailHref: string;
   closeHref: string;
   onClose: () => void;
-  onDetails: () => void;
 }) {
   return (
     <div
@@ -498,17 +510,17 @@ function MapPick({
           <a
             href={listHref}
             data-map-directory
-            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md bg-accent px-3 text-sm font-medium text-bg no-underline sm:flex-none"
+            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md border border-line bg-raised px-3 text-sm text-fg no-underline sm:flex-none"
           >
             Directory
           </a>
-          <button
-            type="button"
-            onClick={onDetails}
-            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md border border-line bg-raised px-3 text-sm text-fg sm:flex-none"
+          <a
+            href={detailHref}
+            data-map-details
+            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md bg-accent px-3 text-sm font-medium text-bg no-underline sm:flex-none"
           >
             Details
-          </button>
+          </a>
           <a
             href={closeHref}
             onClick={onClose}
