@@ -8,10 +8,12 @@ export function VenueCard({
   venue,
   href,
   onOpen,
+  overline,
 }: {
   venue: Place;
   href?: string;
   onOpen?: (v: Place) => void;
+  overline?: string;
 }) {
   const className = cn(
     "flex w-full flex-col rounded-lg border border-line bg-surface p-4 text-left no-underline transition-colors duration-150 select-none hover:border-accent/40 hover:bg-raised",
@@ -22,7 +24,7 @@ export function VenueCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[11px] font-medium tracking-[0.14em] text-muted uppercase">
-            {venue.area}
+            {overline ?? venue.area}
           </p>
           <h3 className="font-display mt-1 text-xl leading-snug text-fg">{venue.name}</h3>
           <p className="mt-1 text-xs text-faint">

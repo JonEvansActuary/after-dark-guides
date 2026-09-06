@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Search, ChevronDown, X, MapPin } from "lucide-react";
+import { Search, ChevronDown, X, MapPin, List } from "lucide-react";
 import { isNightlife } from "@/data/venues";
 import { CATEGORIES, combinedScore, type Category } from "@/data/types";
 import { VenueCard } from "@/components/venue-card";
@@ -23,6 +23,8 @@ type SortKey = "combined" | "looks" | "ratio" | "name" | "area";
 export type ViewKey = "list" | "ranks" | "areas" | "map";
 export type Scope = "night" | "dining" | "all";
 
+export const ALL_REGION = "all";
+
 export type GuideSearch = {
   region?: string;
   scope?: Scope;
@@ -38,7 +40,9 @@ export function parseGuideSearch(
   defaultRegion: string,
 ): GuideSearch {
   const next: GuideSearch = {};
-  if (typeof raw.region === "string" && regionIds.includes(raw.region) && raw.region !== defaultRegion) {
+  if (raw.region === ALL_REGION) {
+    next.region = ALL_REGION;
+  } else if (typeof raw.region === "string" && regionIds.includes(raw.region) && raw.region !== defaultRegion) {
     next.region = raw.region;
   }
   if (raw.scope === "dining" || raw.scope === "all") next.scope = raw.scope;
@@ -94,8 +98,10 @@ export function FieldGuide({
   search: GuideSearch;
 }) {
   const placed = search.place ? venues.find((v) => v.id === search.place) : undefined;
-  const region =
-    placed && regions.some((r) => r.id === placed.region)
+  const citywide = search.region === ALL_REGION;
+  const region = citywide
+    ? ALL_REGION
+    : placed && regions.some((r) => r.id === placed.region)
       ? placed.region
       : search.region && regions.some((r) => r.id === search.region)
         ? search.region
@@ -111,6 +117,7 @@ export function FieldGuide({
   const [full, setFull] = useState(false);
   const [method, setMethod] = useState(false);
   const lastPlace = useRef<string | undefined>(undefined);
+  const mapBox = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (search.place) {
@@ -135,15 +142,31 @@ export function FieldGuide({
     setFull(false);
   };
 
-  const current = regions.find((r) => r.id === region) ?? regions[0];
-  const districts = districtsFor(region);
+  const regionTab = (id: string) => regions.find((r) => r.id === id)?.tab ?? id;
+  const citywideMeta: GuideRegion = {
+    id: ALL_REGION,
+    tab: "All",
+    kicker: "Citywide",
+    headline: "The whole city, scored.",
+    range: regions.map((r) => r.tab).join(" · "),
+    blurb:
+      "Every neighborhood in this guide in one directory. Same two scores. Other cities stay on their own tabs.",
+  };
+  const current = citywide ? citywideMeta : (regions.find((r) => r.id === region) ?? regions[0]);
+  const districts = citywide
+    ? unique(regions.flatMap((r) => [...districtsFor(r.id)]))
+    : [...districtsFor(region)];
   const area = districts.includes(search.area ?? "") ? search.area! : "All";
-  const pool = useMemo(() => venues.filter((v) => v.region === region), [venues, region]);
+  const pool = useMemo(
+    () => (citywide ? venues : venues.filter((v) => v.region === region)),
+    [venues, region, citywide],
+  );
 
   const hrefFor = (next: { region?: string; scope?: Scope; view?: ViewKey; area?: string; q?: string; place?: string }) =>
     guideHref(path, defaultRegion, next);
 
-  const placeHref = (v: Place) => hrefFor({ region: v.region, scope, view: "map", place: v.id });
+  const placeHref = (v: Place) => hrefFor({ region, scope, view: "map", place: v.id });
+  const overline = (v: Place) => (citywide ? `${regionTab(v.region)} · ${v.area}` : v.area);
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
@@ -170,28 +193,31 @@ export function FieldGuide({
         v.category.toLowerCase().includes(query)
       );
     });
-    if (open && !rows.some((v) => v.id === open.id) && open.region === region) rows.push(open);
+    if (open && !rows.some((v) => v.id === open.id) && (citywide || open.region === region)) rows.push(open);
     rows.sort((a, b) => {
       if (sort === "looks") return b.looks - a.looks || a.name.localeCompare(b.name);
       if (sort === "ratio") return b.ratio - a.ratio || a.name.localeCompare(b.name);
       if (sort === "name") return a.name.localeCompare(b.name);
-      if (sort === "area") return a.area.localeCompare(b.area) || a.name.localeCompare(b.name);
+      if (sort === "area") {
+        const ra = overline(a).localeCompare(overline(b));
+        return ra || a.name.localeCompare(b.name);
+      }
       return combinedScore(b) - combinedScore(a) || b.looks - a.looks;
     });
     return rows;
-  }, [pool, q, area, cat, scope, minLooks, minRatio, sort, open, region]);
+  }, [pool, q, area, cat, scope, minLooks, minRatio, sort, open, region, citywide]);
 
   const night = pool.filter(isNightlife);
   const topLooks = [...night].sort((a, b) => b.looks - a.looks || b.ratio - a.ratio).slice(0, 12);
   const topRatio = [...night].sort((a, b) => b.ratio - a.ratio || b.looks - a.looks).slice(0, 12);
   const topCombo = [...night].sort((a, b) => combinedScore(b) - combinedScore(a)).slice(0, 12);
 
-  const tabHref = (id: string) => hrefFor({ region: id, scope, view: view === "map" && !search.place ? "map" : view === "map" ? "map" : view, q });
+  const tabHref = (id: string) => hrefFor({ region: id, scope, view: view === "map" ? "map" : view, q });
   const scopeHref = (s: Scope) => hrefFor({ region, scope: s, view, area, q });
   const viewHref = (v: ViewKey) => hrefFor({ region, scope, view: v, area, q });
   const areaHref = (a: string) => hrefFor({ region, scope, view, area: a, q });
-
-  const mapBox = useRef<HTMLDivElement>(null);
+  const listHref = viewHref("list");
+  const dockRegions = [{ id: ALL_REGION, tab: "All" }, ...regions];
 
   useLayoutEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -204,7 +230,7 @@ export function FieldGuide({
   }, [region, scope, view, area, search.place]);
 
   return (
-    <div className="min-h-screen bg-bg pb-72 text-fg">
+    <div className="min-h-screen bg-bg pb-72 text-fg" data-citywide={citywide ? "1" : "0"}>
       <div className="mx-auto max-w-6xl px-4 pt-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
@@ -228,7 +254,7 @@ export function FieldGuide({
             name="q"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search this region…"
+            placeholder={citywide ? "Search this city…" : "Search this region…"}
             className="h-11 w-full rounded-md border border-line bg-surface pr-3 pl-10 text-sm text-fg placeholder:text-faint outline-none focus:border-accent"
           />
         </form>
@@ -267,7 +293,7 @@ export function FieldGuide({
             ) : null}
 
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Stat n={pool.length} label="Places in region" />
+              <Stat n={pool.length} label={citywide ? "Places in city" : "Places in region"} />
               <Stat n={night.length} label="Nightlife rooms" />
               <Stat n={districts.length} label="Districts" />
               <Stat n="Thu–Sat" label="Peak window" />
@@ -317,50 +343,82 @@ export function FieldGuide({
 
         {view === "ranks" ? (
           <div className="mt-8 grid gap-8 lg:grid-cols-3">
-            <RankCol title="Highest looks draw" sub="Nightlife only · tap for the map" items={topLooks} metric="looks" hrefFor={placeHref} />
-            <RankCol title="Highest women:men" sub="Nightlife only · tap for the map" items={topRatio} metric="ratio" hrefFor={placeHref} />
-            <RankCol title="Best combined" sub="0.55 looks + 0.45 ratio · tap for the map" items={topCombo} metric="combo" hrefFor={placeHref} />
+            <RankCol title="Highest looks draw" sub="Nightlife only · tap for the map" items={topLooks} metric="looks" hrefFor={placeHref} overline={overline} />
+            <RankCol title="Highest women:men" sub="Nightlife only · tap for the map" items={topRatio} metric="ratio" hrefFor={placeHref} overline={overline} />
+            <RankCol title="Best combined" sub="0.55 looks + 0.45 ratio · tap for the map" items={topCombo} metric="combo" hrefFor={placeHref} overline={overline} />
           </div>
         ) : view === "areas" ? (
           <div className="mt-8 space-y-10">
-            {(area === "All" ? districts : [area]).map((a) => {
-              const items = filtered.filter((v) => v.area === a);
-              if (!items.length) return null;
-              return (
-                <section key={a}>
-                  <div className="mb-4 flex items-end justify-between">
-                    <h2 className="font-display text-3xl">{a}</h2>
-                    <p className="text-xs text-faint">{items.length} listed</p>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {items.map((v) => (
-                      <VenueCard key={v.id} venue={v} href={placeHref(v)} />
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
+            {citywide && area === "All"
+              ? regions.map((r) => {
+                  const items = filtered.filter((v) => v.region === r.id);
+                  if (!items.length) return null;
+                  return (
+                    <section key={r.id}>
+                      <div className="mb-4 flex items-end justify-between">
+                        <h2 className="font-display text-3xl">{r.tab}</h2>
+                        <p className="text-xs text-faint">{items.length} listed</p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {items.map((v) => (
+                          <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })
+              : (area === "All" ? districts : [area]).map((a) => {
+                  const items = filtered.filter((v) => v.area === a);
+                  if (!items.length) return null;
+                  return (
+                    <section key={a}>
+                      <div className="mb-4 flex items-end justify-between">
+                        <h2 className="font-display text-3xl">{a}</h2>
+                        <p className="text-xs text-faint">{items.length} listed</p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {items.map((v) => (
+                          <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
           </div>
         ) : view === "map" ? (
           <div className="mt-4" ref={mapBox}>
             {filtered.length === 0 ? (
               <p className="py-16 text-center text-muted">No places match those filters.</p>
             ) : (
-              <div className="relative">
-                <VenueMap key={`${region}-${open?.id ?? "all"}`} places={filtered} selectedId={open?.id} onOpen={setOpen} />
-                {open ? (
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1100] p-3">
-                    <MapPick
-                      venue={open}
-                      closeHref={hrefFor({ region, scope, view: "map", area, q })}
-                      onClose={clearPick}
-                      onDetails={() => setFull(true)}
-                    />
-                  </div>
-                ) : (
-                  <p className="mt-3 text-sm text-faint">Tap a pin — or a directory listing — to zoom to that room.</p>
-                )}
-              </div>
+              <>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <a
+                    href={listHref}
+                    data-map-directory
+                    className="inline-flex h-11 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-bg no-underline"
+                  >
+                    <List className="size-4" />
+                    Directory
+                  </a>
+                  <p className="text-sm text-faint">{filtered.length} on the map</p>
+                </div>
+                <div className="relative">
+                  <VenueMap key={`${region}-${open?.id ?? "all"}`} places={filtered} selectedId={open?.id} onOpen={setOpen} />
+                  {open ? (
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1100] p-3">
+                      <MapPick
+                        venue={open}
+                        listHref={listHref}
+                        closeHref={hrefFor({ region, scope, view: "map", area, q })}
+                        onClose={clearPick}
+                        onDetails={() => setFull(true)}
+                      />
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-faint">Tap a pin — or a directory listing — to zoom to that room.</p>
+                  )}
+                </div>
+              </>
             )}
           </div>
         ) : (
@@ -370,7 +428,7 @@ export function FieldGuide({
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {filtered.map((v) => (
-                <VenueCard key={v.id} venue={v} href={placeHref(v)} />
+                <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
               ))}
             </div>
             {filtered.length === 0 ? <p className="py-16 text-center text-muted">No places match those filters.</p> : null}
@@ -383,18 +441,29 @@ export function FieldGuide({
       </main>
 
       {full && open ? <VenueDetail venue={open} onClose={() => setFull(false)} /> : null}
-      <CityDock current={city} regions={regions} region={region} tabHref={tabHref} />
+      <CityDock current={city} regions={dockRegions} region={region} tabHref={tabHref} />
     </div>
   );
 }
 
+function unique(items: string[]) {
+  const seen = new Set<string>();
+  return items.filter((x) => {
+    if (seen.has(x)) return false;
+    seen.add(x);
+    return true;
+  });
+}
+
 function MapPick({
   venue,
+  listHref,
   closeHref,
   onClose,
   onDetails,
 }: {
   venue: Place;
+  listHref: string;
   closeHref: string;
   onClose: () => void;
   onDetails: () => void;
@@ -406,7 +475,7 @@ function MapPick({
       role="region"
       aria-label={`${venue.name} on the map`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="min-w-0 flex-1">
           <p className="inline-flex items-center gap-1.5 text-[10px] font-medium tracking-[0.14em] text-accent uppercase">
             <MapPin className="size-3.5" />
@@ -425,21 +494,30 @@ function MapPick({
           <p className="font-display text-lg tabular-nums text-ratio">{venue.ratio.toFixed(1)}</p>
           <p className="text-[10px] tracking-wide text-faint uppercase">W:M</p>
         </div>
-        <button
-          type="button"
-          onClick={onDetails}
-          className="inline-flex h-11 shrink-0 items-center rounded-md border border-line bg-raised px-3 text-xs text-fg sm:text-sm"
-        >
-          Details
-        </button>
-        <a
-          href={closeHref}
-          onClick={onClose}
-          className="flex size-11 shrink-0 items-center justify-center rounded-md border border-line text-muted no-underline hover:text-fg"
-          aria-label="Clear selection"
-        >
-          <X className="size-5" />
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <a
+            href={listHref}
+            data-map-directory
+            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md bg-accent px-3 text-sm font-medium text-bg no-underline sm:flex-none"
+          >
+            Directory
+          </a>
+          <button
+            type="button"
+            onClick={onDetails}
+            className="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-md border border-line bg-raised px-3 text-sm text-fg sm:flex-none"
+          >
+            Details
+          </button>
+          <a
+            href={closeHref}
+            onClick={onClose}
+            className="flex size-11 shrink-0 items-center justify-center rounded-md border border-line text-muted no-underline hover:text-fg"
+            aria-label="Clear selection"
+          >
+            <X className="size-5" />
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -483,12 +561,14 @@ function RankCol({
   items,
   metric,
   hrefFor,
+  overline,
 }: {
   title: string;
   sub: string;
   items: Place[];
   metric: "looks" | "ratio" | "combo";
   hrefFor: (v: Place) => string;
+  overline: (v: Place) => string;
 }) {
   return (
     <section>
@@ -504,7 +584,7 @@ function RankCol({
               <span className="font-display w-6 text-lg text-faint tabular-nums">{i + 1}</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm text-fg">{v.name}</span>
-                <span className="block truncate text-[11px] text-faint">{v.area}</span>
+                <span className="block truncate text-[11px] text-faint">{overline(v)}</span>
               </span>
               <span className="w-16 shrink-0">
                 {metric === "looks" ? (

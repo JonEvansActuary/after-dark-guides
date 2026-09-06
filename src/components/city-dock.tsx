@@ -58,9 +58,10 @@ export function CityDock({
           <a
             key={r.id}
             href={tabHref(r.id)}
+            title={r.tab}
             aria-current={region === r.id ? "page" : undefined}
             className={cn(
-              "inline-flex h-11 min-w-0 flex-1 items-center justify-center px-1 text-[11px] font-medium no-underline sm:h-12 sm:text-sm",
+              "inline-flex h-11 min-w-0 flex-1 items-center justify-center truncate px-0.5 text-[10px] font-medium no-underline sm:h-12 sm:px-1 sm:text-xs",
               region === r.id ? "bg-accent text-bg" : "text-muted",
             )}
           >
