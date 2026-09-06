@@ -71,3 +71,62 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+.venue-map-shell {
+  height: min(40rem, calc(100dvh - 16.75rem));
+  min-height: 22rem;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.venue-map-shell .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.venue-map-shell .leaflet-control-attribution {
+  background: color-mix(in oklab, var(--color-bg) 78%, transparent);
+  color: var(--color-faint);
+  font-size: 10px;
+}
+
+.venue-map-shell .leaflet-control-attribution a {
+  color: var(--color-muted);
+}
+
+.venue-map-shell .leaflet-bar a {
+  background: var(--color-surface);
+  color: var(--color-fg);
+  border-bottom-color: var(--color-line);
+}
+
+.venue-map-shell .leaflet-bar a:hover,
+.venue-map-shell .leaflet-bar a:focus {
+  background: var(--color-raised);
+  color: var(--color-accent);
+}
+
+.venue-map-shell .leaflet-touch .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+
+.venue-map-shell .leaflet-tooltip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  color: var(--color-fg);
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  font-family: var(--font-sans);
+}
+
+.venue-map-shell .leaflet-tooltip-top::before {
+  border-top-color: var(--color-line);
+}
+
+.venue-map-legend {
+  z-index: 1000;
+}

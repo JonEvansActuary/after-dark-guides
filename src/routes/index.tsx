@@ -14,6 +14,7 @@ import { BEACH_VENUES } from "@/data/beach-venues";
 import { VenueCard } from "@/components/venue-card";
 import { VenueDetail } from "@/components/venue-detail";
 import { ScoreMeter } from "@/components/score-meter";
+import { VenueMap } from "@/components/venue-map";
 import { cn } from "@/lib/utils";
 import type { Place } from "@/data/place";
 
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/")({
     const next: HomeSearch = {};
     if (isRegion(raw.region) && raw.region !== "sunny-isles") next.region = raw.region;
     if (raw.scope === "dining" || raw.scope === "all") next.scope = raw.scope;
-    if (raw.view === "ranks" || raw.view === "areas") next.view = raw.view;
+    if (raw.view === "ranks" || raw.view === "areas" || raw.view === "map") next.view = raw.view;
     if (typeof raw.area === "string" && raw.area !== "" && raw.area !== "All") next.area = raw.area;
     if (typeof raw.q === "string" && raw.q.trim()) next.q = raw.q;
     return next;
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/")({
 });
 
 type SortKey = "combined" | "looks" | "ratio" | "name" | "area";
-type ViewKey = "list" | "ranks" | "areas";
+type ViewKey = "list" | "ranks" | "areas" | "map";
 type Scope = "night" | "dining" | "all";
 
 type HomeSearch = {
@@ -119,7 +120,7 @@ function Home() {
   const topRatio = [...night].sort((a, b) => b.ratio - a.ratio || b.looks - a.looks).slice(0, 12);
   const topCombo = [...night].sort((a, b) => combinedScore(b) - combinedScore(a)).slice(0, 12);
 
-  const tabHref = (id: BeachRegionId) => hrefFor({ region: id, q });
+  const tabHref = (id: BeachRegionId) => hrefFor({ region: id, scope, view, q });
   const scopeHref = (s: Scope) => hrefFor({ region, scope: s, view, area, q });
   const viewHref = (v: ViewKey) => hrefFor({ region, scope, view: v, area, q });
   const areaHref = (a: BeachArea | "All") => hrefFor({ region, scope, view, area: a, q });
@@ -170,63 +171,67 @@ function Home() {
               {s === "night" ? "Nightlife" : s === "dining" ? "Eat & drink" : "All public"}
             </Chip>
           ))}
-          {(["list", "ranks", "areas"] as const).map((s) => (
+          {(["list", "map", "ranks", "areas"] as const).map((s) => (
             <Chip key={s} active={view === s} href={viewHref(s)}>
-              {s === "list" ? "Directory" : s === "ranks" ? "Leaderboards" : "By district"}
+              {s === "list" ? "Directory" : s === "map" ? "Map" : s === "ranks" ? "Leaderboards" : "By district"}
             </Chip>
           ))}
         </div>
       </div>
 
       <main className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <section className="max-w-2xl">
-          <p className="text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
-            {current.kicker}
-          </p>
-          <p className="font-display mt-2 text-3xl leading-tight sm:text-4xl">
-            {current.headline}
-          </p>
-          <p className="mt-3 text-sm text-faint">{current.range}</p>
-          <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
-            {current.blurb}
-          </p>
-        </section>
+        {view !== "map" ? (
+          <>
+            <section className="max-w-2xl">
+              <p className="text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
+                {current.kicker}
+              </p>
+              <p className="font-display mt-2 text-3xl leading-tight sm:text-4xl">
+                {current.headline}
+              </p>
+              <p className="mt-3 text-sm text-faint">{current.range}</p>
+              <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
+                {current.blurb}
+              </p>
+            </section>
 
-        <button
-          type="button"
-          onClick={() => setMethod((m) => !m)}
-          className="mt-5 flex items-center gap-2 text-sm text-accent"
-        >
-          How the scores work
-          <ChevronDown className={cn("size-4 transition-transform", method && "rotate-180")} />
-        </button>
-        {method ? (
-          <div className="mt-3 max-w-3xl rounded-lg border border-line bg-surface p-4 text-sm leading-relaxed text-muted">
-            <p>
-              These are scene estimates, not a census. They synthesize venue type, dress codes, hotel doors, and typical Beach patterns (LIV and Faena vs Ocean Drive vs Bal Harbour lunch vs Sunny Isles hotel bars). Crowds swing hard on Art Basel, boat-show week, and any sold-out Sunday at Nikki.
-            </p>
-            <ul className="mt-3 list-disc space-y-1 pl-5">
-              <li>
-                <span className="text-looks">Looks draw (1–10)</span> — how much the room typically pulls attractive women on a peak night. Dressy cocktail bars and dance floors score high; cigar rooms, sports bars, and 2am Taco Bell do not.
-              </li>
-              <li>
-                <span className="text-ratio">Women : men (1–10)</span> — 10 is almost all women (bridal shops, pole studio), 5 is even, 1 is almost all men (cigar lounge, fly shop).
-              </li>
-              <li>
-                Confidence is high where the scene is well documented, low for chains and daytime retail. Daytime shops are included because you asked for public places, not just bars.
-              </li>
-            </ul>
-          </div>
+            <button
+              type="button"
+              onClick={() => setMethod((m) => !m)}
+              className="mt-5 flex items-center gap-2 text-sm text-accent"
+            >
+              How the scores work
+              <ChevronDown className={cn("size-4 transition-transform", method && "rotate-180")} />
+            </button>
+            {method ? (
+              <div className="mt-3 max-w-3xl rounded-lg border border-line bg-surface p-4 text-sm leading-relaxed text-muted">
+                <p>
+                  These are scene estimates, not a census. They synthesize venue type, dress codes, hotel doors, and typical Beach patterns (LIV and Faena vs Ocean Drive vs Bal Harbour lunch vs Sunny Isles hotel bars). Crowds swing hard on Art Basel, boat-show week, and any sold-out Sunday at Nikki.
+                </p>
+                <ul className="mt-3 list-disc space-y-1 pl-5">
+                  <li>
+                    <span className="text-looks">Looks draw (1–10)</span> — how much the room typically pulls attractive women on a peak night. Dressy cocktail bars and dance floors score high; cigar rooms, sports bars, and 2am Taco Bell do not.
+                  </li>
+                  <li>
+                    <span className="text-ratio">Women : men (1–10)</span> — 10 is almost all women (bridal shops, pole studio), 5 is even, 1 is almost all men (cigar lounge, fly shop).
+                  </li>
+                  <li>
+                    Confidence is high where the scene is well documented, low for chains and daytime retail. Daytime shops are included because you asked for public places, not just bars.
+                  </li>
+                </ul>
+              </div>
+            ) : null}
+
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Stat n={pool.length} label="Places in region" />
+              <Stat n={night.length} label="Nightlife rooms" />
+              <Stat n={districts.length} label="Districts" />
+              <Stat n="Thu–Sat" label="Peak window" />
+            </div>
+          </>
         ) : null}
 
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat n={pool.length} label="Places in region" />
-          <Stat n={night.length} label="Nightlife rooms" />
-          <Stat n={districts.length} label="Districts" />
-          <Stat n="Thu–Sat" label="Peak window" />
-        </div>
-
-        <div className="mt-8 rounded-lg border border-line bg-surface p-4">
+        <div className={view === "map" ? "mt-3 rounded-lg border border-line bg-surface p-4" : "mt-8 rounded-lg border border-line bg-surface p-4"}>
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2">
               <Chip active={area === "All"} href={areaHref("All")}>
@@ -314,6 +319,14 @@ function Home() {
               );
             })}
           </div>
+        ) : view === "map" ? (
+          <div className="mt-4">
+            {filtered.length === 0 ? (
+              <p className="py-16 text-center text-muted">No places match those filters.</p>
+            ) : (
+              <VenueMap key={region} places={filtered} selectedId={open?.id} onOpen={setOpen} />
+            )}
+          </div>
         ) : (
           <>
             <p className="mt-5 text-sm text-faint">
@@ -330,9 +343,11 @@ function Home() {
           </>
         )}
 
-        <footer className="mt-16 border-t border-line py-8 text-xs leading-relaxed text-faint">
-          Scores describe typical Thursday–Saturday (and Sunday beach-club) unless noted. Tabs run north to south: Sunny Isles → Bal Harbour/Surfside/Haulover → North Beach → Mid-Beach → South Beach. Regions do not mix. This is the barrier island only — not Brickell, Wynwood, or downtown Miami. Snapshot 2026.
-        </footer>
+        {view !== "map" ? (
+          <footer className="mt-16 border-t border-line py-8 text-xs leading-relaxed text-faint">
+            Scores describe typical Thursday–Saturday (and Sunday beach-club) unless noted. Tabs run north to south: Sunny Isles → Bal Harbour/Surfside/Haulover → North Beach → Mid-Beach → South Beach. Regions do not mix. This is the barrier island only — not Brickell, Wynwood, or downtown Miami. Snapshot 2026.
+          </footer>
+        ) : null}
       </main>
 
       {open ? <VenueDetail venue={open} onClose={() => setOpen(null)} /> : null}
