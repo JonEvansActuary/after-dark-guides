@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "After Dark Beach";
+const APP_NAME = "After Dark";
 function noopTouch() {}
 
 export const Route = createRootRoute({
@@ -15,7 +15,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Field guide to the barrier-island strip from Sunny Isles to South Beach — Bal Harbour, North Beach, Mid-Beach, South Beach — with looks-draw and women-to-men scores.",
+          "Nightlife field guides for Miami Beach, Knoxville, Nashville, Atlanta, Chattanooga, Lexington, Louisville, Cincinnati, Asheville, and Orlando, scored on looks draw and women-to-men ratio.",
       },
       { name: "theme-color", content: "#0c0b0a" },
     ],

@@ -19,8 +19,13 @@ export function VenueDetail({
       if (closeHref) window.location.assign(closeHref);
       else onClose?.();
     };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [onClose, closeHref]);
 
   const closeClass =
@@ -32,7 +37,12 @@ export function VenueDetail({
       role="presentation"
     >
       {closeHref ? (
-        <a href={closeHref} className="absolute inset-0" aria-label="Close details" data-venue-detail-dismiss />
+        <a
+          href={closeHref}
+          className="absolute inset-0"
+          aria-label="Close details"
+          data-venue-detail-dismiss
+        />
       ) : (
         <button
           type="button"
@@ -64,21 +74,39 @@ export function VenueDetail({
               <X className="size-5" />
             </a>
           ) : (
-            <button type="button" onClick={onClose} className={closeClass} aria-label="Close" data-venue-detail-close>
+            <button
+              type="button"
+              onClick={onClose}
+              className={closeClass}
+              aria-label="Close"
+              data-venue-detail-close
+            >
               <X className="size-5" />
             </button>
           )}
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-5">
-          <ScoreMeter label="Looks draw" value={venue.looks} tone="looks" caption={looksLabel(venue.looks)} />
-          <ScoreMeter label="Women : men" value={venue.ratio} tone="ratio" caption={ratioLabel(venue.ratio)} />
+          <ScoreMeter
+            label="Looks draw"
+            value={venue.looks}
+            tone="looks"
+            caption={looksLabel(venue.looks)}
+          />
+          <ScoreMeter
+            label="Women : men"
+            value={venue.ratio}
+            tone="ratio"
+            caption={ratioLabel(venue.ratio)}
+          />
         </div>
 
         <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-md bg-raised p-3">
             <dt className="text-[11px] tracking-wide text-faint uppercase">Combined</dt>
-            <dd className="font-display mt-1 text-2xl tabular-nums">{combinedScore(venue).toFixed(1)}</dd>
+            <dd className="font-display mt-1 text-2xl tabular-nums">
+              {combinedScore(venue).toFixed(1)}
+            </dd>
           </div>
           <div className="rounded-md bg-raised p-3">
             <dt className="text-[11px] tracking-wide text-faint uppercase">Peak</dt>
@@ -91,7 +119,10 @@ export function VenueDetail({
 
         <div className="mt-4 flex flex-wrap gap-2">
           {venue.tags.map((t) => (
-            <span key={t} className="rounded-full border border-line px-2.5 py-1 text-[11px] text-muted">
+            <span
+              key={t}
+              className="rounded-full border border-line px-2.5 py-1 text-[11px] text-muted"
+            >
               {t}
             </span>
           ))}

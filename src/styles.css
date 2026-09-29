@@ -38,7 +38,9 @@
     cursor: pointer;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display);
     text-wrap: balance;
   }
@@ -65,7 +67,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -90,6 +94,16 @@
   background: color-mix(in oklab, var(--color-bg) 78%, transparent);
   color: var(--color-faint);
   font-size: 10px;
+}
+
+.venue-map-shell[data-has-pick="1"] .leaflet-bottom {
+  bottom: 9.5rem;
+}
+
+@media (min-width: 640px) {
+  .venue-map-shell[data-has-pick="1"] .leaflet-bottom {
+    bottom: 5.5rem;
+  }
 }
 
 .venue-map-shell .leaflet-control-attribution a {

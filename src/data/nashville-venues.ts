@@ -606,7 +606,6 @@ const SKIP = new Set([
   "n-404",
   "n-husk",
   "n-lockeland-table",
-  "n-mlrose",
   "n-tin-roof",
   "n-two-ten",
 ]);

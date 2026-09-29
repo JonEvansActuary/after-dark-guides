@@ -43,7 +43,11 @@ export function parseGuideSearch(
   const next: GuideSearch = {};
   if (raw.region === ALL_REGION) {
     next.region = ALL_REGION;
-  } else if (typeof raw.region === "string" && regionIds.includes(raw.region) && raw.region !== defaultRegion) {
+  } else if (
+    typeof raw.region === "string" &&
+    regionIds.includes(raw.region) &&
+    raw.region !== defaultRegion
+  ) {
     next.region = raw.region;
   }
   if (raw.scope === "dining" || raw.scope === "all") next.scope = raw.scope;
@@ -64,7 +68,15 @@ export function parseGuideSearch(
 export function guideHref(
   path: string,
   defaultRegion: string,
-  next: { region?: string; scope?: Scope; view?: ViewKey; area?: string; q?: string; place?: string; detail?: boolean },
+  next: {
+    region?: string;
+    scope?: Scope;
+    view?: ViewKey;
+    area?: string;
+    q?: string;
+    place?: string;
+    detail?: boolean;
+  },
 ) {
   const p = new URLSearchParams();
   if (next.region && next.region !== defaultRegion) p.set("region", next.region);
@@ -137,6 +149,10 @@ export function FieldGuide({
     }
   }, [search.place, venues]);
 
+  useEffect(() => {
+    setQ(search.q ?? "");
+  }, [search.q]);
+
   const clearPick = () => {
     lastPlace.current = undefined;
     setOpen(null);
@@ -172,11 +188,13 @@ export function FieldGuide({
     detail?: boolean;
   }) => guideHref(path, defaultRegion, next);
 
-  const placeHref = (v: Place) => hrefFor({ region, scope, view: "map", place: v.id });
+  const placeHref = (v: Place) => hrefFor({ region, scope, view: "map", area, q, place: v.id });
   const overline = (v: Place) => (citywide ? `${regionTab(v.region)} · ${v.area}` : v.area);
 
-  const filtered = useMemo(() => {
+  const matched = useMemo(() => {
     const query = q.trim().toLowerCase();
+    const line = (v: Place) =>
+      citywide ? `${regions.find((r) => r.id === v.region)?.tab ?? v.region} · ${v.area}` : v.area;
     const rows = pool.filter((v) => {
       if (area !== "All" && v.area !== area) return false;
       if (cat !== "All" && v.category !== cat) return false;
@@ -192,34 +210,39 @@ export function FieldGuide({
         return false;
       if (v.looks < minLooks || v.ratio < minRatio) return false;
       if (!query) return true;
-      return (
-        v.name.toLowerCase().includes(query) ||
-        v.blurb.toLowerCase().includes(query) ||
-        v.address.toLowerCase().includes(query) ||
-        v.tags.some((t) => t.includes(query)) ||
-        v.category.toLowerCase().includes(query)
-      );
+      return [v.name, v.blurb, v.notes, v.address, v.area, v.category, ...v.tags]
+        .join("\n")
+        .toLowerCase()
+        .includes(query);
     });
-    if (open && !rows.some((v) => v.id === open.id) && (citywide || open.region === region)) rows.push(open);
     rows.sort((a, b) => {
       if (sort === "looks") return b.looks - a.looks || a.name.localeCompare(b.name);
       if (sort === "ratio") return b.ratio - a.ratio || a.name.localeCompare(b.name);
       if (sort === "name") return a.name.localeCompare(b.name);
-      if (sort === "area") {
-        const ra = overline(a).localeCompare(overline(b));
-        return ra || a.name.localeCompare(b.name);
-      }
-      return combinedScore(b) - combinedScore(a) || b.looks - a.looks;
+      if (sort === "area") return line(a).localeCompare(line(b)) || a.name.localeCompare(b.name);
+      return (
+        combinedScore(b) - combinedScore(a) || b.looks - a.looks || a.name.localeCompare(b.name)
+      );
     });
     return rows;
-  }, [pool, q, area, cat, scope, minLooks, minRatio, sort, open, region, citywide]);
+  }, [pool, q, area, cat, scope, minLooks, minRatio, sort, citywide, regions]);
+
+  const filtered = useMemo(() => {
+    if (!open || matched.some((v) => v.id === open.id) || (!citywide && open.region !== region))
+      return matched;
+    return [...matched, open];
+  }, [matched, open, citywide, region]);
 
   const night = pool.filter(isNightlife);
-  const topLooks = [...night].sort((a, b) => b.looks - a.looks || b.ratio - a.ratio).slice(0, 12);
-  const topRatio = [...night].sort((a, b) => b.ratio - a.ratio || b.looks - a.looks).slice(0, 12);
-  const topCombo = [...night].sort((a, b) => combinedScore(b) - combinedScore(a)).slice(0, 12);
+  const ranked = matched.filter(isNightlife);
+  const topLooks = [...ranked].sort((a, b) => b.looks - a.looks || b.ratio - a.ratio).slice(0, 12);
+  const topRatio = [...ranked].sort((a, b) => b.ratio - a.ratio || b.looks - a.looks).slice(0, 12);
+  const topCombo = [...ranked]
+    .sort((a, b) => combinedScore(b) - combinedScore(a) || b.looks - a.looks)
+    .slice(0, 12);
 
-  const tabHref = (id: string) => hrefFor({ region: id, scope, view: view === "map" ? "map" : view, q });
+  const tabHref = (id: string) =>
+    hrefFor({ region: id, scope, view: view === "map" ? "map" : view, q });
   const scopeHref = (s: Scope) => hrefFor({ region, scope: s, view, area, q });
   const viewHref = (v: ViewKey) => hrefFor({ region, scope, view: v, area, q });
   const areaHref = (a: string) => hrefFor({ region, scope, view, area: a, q });
@@ -229,7 +252,8 @@ export function FieldGuide({
   const pickCloseHref = hrefFor({ region, scope, view: "map", area, q });
   const detailHrefFor = (v: Place) =>
     hrefFor({ region, scope, view: "map", area, q, place: v.id, detail: true });
-  const detailCloseHrefFor = (v: Place) => hrefFor({ region, scope, view: "map", area, q, place: v.id });
+  const detailCloseHrefFor = (v: Place) =>
+    hrefFor({ region, scope, view: "map", area, q, place: v.id });
 
   useLayoutEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -246,7 +270,9 @@ export function FieldGuide({
       <div className="mx-auto max-w-6xl px-4 pt-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] font-medium tracking-[0.22em] text-accent uppercase">{eyebrow}</p>
+            <p className="text-[10px] font-medium tracking-[0.22em] text-accent uppercase">
+              {eyebrow}
+            </p>
             <h1 className="font-display text-2xl leading-none sm:text-3xl">{title}</h1>
           </div>
           <p className="hidden text-right text-xs leading-relaxed text-muted lg:block">
@@ -278,7 +304,13 @@ export function FieldGuide({
           ))}
           {(["list", "map", "ranks", "areas"] as const).map((s) => (
             <Chip key={s} active={view === s} href={viewHref(s)}>
-              {s === "list" ? "Directory" : s === "map" ? "Map" : s === "ranks" ? "Leaderboards" : "By district"}
+              {s === "list"
+                ? "Directory"
+                : s === "map"
+                  ? "Map"
+                  : s === "ranks"
+                    ? "Leaderboards"
+                    : "By district"}
             </Chip>
           ))}
         </div>
@@ -288,13 +320,23 @@ export function FieldGuide({
         {view !== "map" ? (
           <>
             <section className="max-w-2xl">
-              <p className="text-[11px] font-medium tracking-[0.18em] text-accent uppercase">{current.kicker}</p>
-              <p className="font-display mt-2 text-3xl leading-tight sm:text-4xl">{current.headline}</p>
+              <p className="text-[11px] font-medium tracking-[0.18em] text-accent uppercase">
+                {current.kicker}
+              </p>
+              <p className="font-display mt-2 text-3xl leading-tight sm:text-4xl">
+                {current.headline}
+              </p>
               <p className="mt-3 text-sm text-faint">{current.range}</p>
-              <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">{current.blurb}</p>
+              <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
+                {current.blurb}
+              </p>
             </section>
 
-            <button type="button" onClick={() => setMethod((m) => !m)} className="mt-5 flex items-center gap-2 text-sm text-accent">
+            <button
+              type="button"
+              onClick={() => setMethod((m) => !m)}
+              className="mt-5 flex items-center gap-2 text-sm text-accent"
+            >
               How the scores work
               <ChevronDown className={cn("size-4 transition-transform", method && "rotate-180")} />
             </button>
@@ -313,7 +355,13 @@ export function FieldGuide({
           </>
         ) : null}
 
-        <div className={view === "map" ? "mt-3 rounded-lg border border-line bg-surface p-4" : "mt-8 rounded-lg border border-line bg-surface p-4"}>
+        <div
+          className={
+            view === "map"
+              ? "mt-3 rounded-lg border border-line bg-surface p-4"
+              : "mt-8 rounded-lg border border-line bg-surface p-4"
+          }
+        >
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2">
               <Chip active={area === "All"} href={areaHref("All")}>
@@ -328,13 +376,31 @@ export function FieldGuide({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <label className="flex min-w-0 flex-1 items-center gap-3 text-xs text-muted">
                 <span className="w-20 shrink-0">Looks ≥ {minLooks}</span>
-                <input type="range" min={0} max={9} value={minLooks} onChange={(e) => setMinLooks(Number(e.target.value))} className="h-11 w-full accent-looks" />
+                <input
+                  type="range"
+                  min={0}
+                  max={9}
+                  value={minLooks}
+                  onChange={(e) => setMinLooks(Number(e.target.value))}
+                  className="h-11 w-full accent-looks"
+                />
               </label>
               <label className="flex min-w-0 flex-1 items-center gap-3 text-xs text-muted">
                 <span className="w-24 shrink-0">Ratio ≥ {minRatio}</span>
-                <input type="range" min={0} max={9} value={minRatio} onChange={(e) => setMinRatio(Number(e.target.value))} className="h-11 w-full accent-ratio" />
+                <input
+                  type="range"
+                  min={0}
+                  max={9}
+                  value={minRatio}
+                  onChange={(e) => setMinRatio(Number(e.target.value))}
+                  className="h-11 w-full accent-ratio"
+                />
               </label>
-              <select value={cat} onChange={(e) => setCat(e.target.value as Category | "All")} className="h-11 rounded-md border border-line bg-surface px-3 text-sm text-fg">
+              <select
+                value={cat}
+                onChange={(e) => setCat(e.target.value as Category | "All")}
+                className="h-11 rounded-md border border-line bg-surface px-3 text-sm text-fg"
+              >
                 <option value="All">All types</option>
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -342,7 +408,11 @@ export function FieldGuide({
                   </option>
                 ))}
               </select>
-              <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="h-11 rounded-md border border-line bg-surface px-3 text-sm text-fg">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="h-11 rounded-md border border-line bg-surface px-3 text-sm text-fg"
+              >
                 <option value="combined">Sort: combined</option>
                 <option value="looks">Sort: looks draw</option>
                 <option value="ratio">Sort: women:men</option>
@@ -355,9 +425,30 @@ export function FieldGuide({
 
         {view === "ranks" ? (
           <div className="mt-8 grid gap-8 lg:grid-cols-3">
-            <RankCol title="Highest looks draw" sub="Nightlife only · tap for the map" items={topLooks} metric="looks" hrefFor={placeHref} overline={overline} />
-            <RankCol title="Highest women:men" sub="Nightlife only · tap for the map" items={topRatio} metric="ratio" hrefFor={placeHref} overline={overline} />
-            <RankCol title="Best combined" sub="0.55 looks + 0.45 ratio · tap for the map" items={topCombo} metric="combo" hrefFor={placeHref} overline={overline} />
+            <RankCol
+              title="Highest looks draw"
+              sub="Nightlife only · tap for the map"
+              items={topLooks}
+              metric="looks"
+              hrefFor={placeHref}
+              overline={overline}
+            />
+            <RankCol
+              title="Highest women:men"
+              sub="Nightlife only · tap for the map"
+              items={topRatio}
+              metric="ratio"
+              hrefFor={placeHref}
+              overline={overline}
+            />
+            <RankCol
+              title="Best combined"
+              sub="0.55 looks + 0.45 ratio · tap for the map"
+              items={topCombo}
+              metric="combo"
+              hrefFor={placeHref}
+              overline={overline}
+            />
           </div>
         ) : view === "areas" ? (
           <div className="mt-8 space-y-10">
@@ -373,7 +464,12 @@ export function FieldGuide({
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {items.map((v) => (
-                          <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
+                          <VenueCard
+                            key={v.id}
+                            venue={v}
+                            href={placeHref(v)}
+                            overline={overline(v)}
+                          />
                         ))}
                       </div>
                     </section>
@@ -390,7 +486,12 @@ export function FieldGuide({
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {items.map((v) => (
-                          <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
+                          <VenueCard
+                            key={v.id}
+                            venue={v}
+                            href={placeHref(v)}
+                            overline={overline(v)}
+                          />
                         ))}
                       </div>
                     </section>
@@ -415,7 +516,12 @@ export function FieldGuide({
                   <p className="text-sm text-faint">{filtered.length} on the map</p>
                 </div>
                 <div className="relative">
-                  <VenueMap key={`${region}-${open?.id ?? "all"}`} places={filtered} selectedId={open?.id} onOpen={setOpen} />
+                  <VenueMap
+                    key={`${region}-${open?.id ?? "all"}`}
+                    places={filtered}
+                    selectedId={open?.id}
+                    onOpen={setOpen}
+                  />
                   {open ? (
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1100] p-3">
                       <MapPick
@@ -427,7 +533,9 @@ export function FieldGuide({
                       />
                     </div>
                   ) : (
-                    <p className="mt-3 text-sm text-faint">Tap a pin — or a directory listing — to zoom to that room.</p>
+                    <p className="mt-3 text-sm text-faint">
+                      Tap a pin — or a directory listing — to zoom to that room.
+                    </p>
                   )}
                 </div>
               </>
@@ -436,23 +544,30 @@ export function FieldGuide({
         ) : (
           <>
             <p className="mt-5 text-sm text-faint">
-              {filtered.length} {filtered.length === 1 ? "place" : "places"} · tap a listing for the map
+              {filtered.length} {filtered.length === 1 ? "place" : "places"} · tap a listing for the
+              map
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {filtered.map((v) => (
                 <VenueCard key={v.id} venue={v} href={placeHref(v)} overline={overline(v)} />
               ))}
             </div>
-            {filtered.length === 0 ? <p className="py-16 text-center text-muted">No places match those filters.</p> : null}
+            {filtered.length === 0 ? (
+              <p className="py-16 text-center text-muted">No places match those filters.</p>
+            ) : null}
           </>
         )}
 
         {view !== "map" ? (
-          <footer className="mt-16 border-t border-line py-8 text-xs leading-relaxed text-faint">{footer}</footer>
+          <footer className="mt-16 border-t border-line py-8 text-xs leading-relaxed text-faint">
+            {footer}
+          </footer>
         ) : null}
       </main>
 
-      {showDetail && open ? <VenueDetail venue={open} closeHref={detailCloseHrefFor(open)} /> : null}
+      {showDetail && open ? (
+        <VenueDetail venue={open} closeHref={detailCloseHrefFor(open)} />
+      ) : null}
       <CityDock current={city} regions={dockRegions} region={region} tabHref={tabHref} />
     </div>
   );
@@ -544,15 +659,7 @@ function Stat({ n, label }: { n: number | string; label: string }) {
   );
 }
 
-function Chip({
-  active,
-  href,
-  children,
-}: {
-  active: boolean;
-  href?: string;
-  children: ReactNode;
-}) {
+function Chip({ active, href, children }: { active: boolean; href?: string; children: ReactNode }) {
   const className = cn(
     "inline-flex h-11 shrink-0 items-center rounded-full border px-3 text-xs font-medium whitespace-nowrap no-underline select-none",
     active ? "border-accent bg-accent text-bg" : "border-line bg-surface text-muted",
@@ -586,31 +693,37 @@ function RankCol({
     <section>
       <h2 className="font-display text-2xl">{title}</h2>
       <p className="mt-1 text-xs text-faint">{sub}</p>
-      <ol className="mt-4 space-y-2">
-        {items.map((v, i) => (
-          <li key={v.id}>
-            <a
-              href={hrefFor(v)}
-              className="flex w-full items-center gap-3 rounded-md border border-line bg-surface px-3 py-2.5 text-left no-underline hover:border-accent/40"
-            >
-              <span className="font-display w-6 text-lg text-faint tabular-nums">{i + 1}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm text-fg">{v.name}</span>
-                <span className="block truncate text-[11px] text-faint">{overline(v)}</span>
-              </span>
-              <span className="w-16 shrink-0">
-                {metric === "looks" ? (
-                  <ScoreMeter label="" value={v.looks} tone="looks" />
-                ) : metric === "ratio" ? (
-                  <ScoreMeter label="" value={v.ratio} tone="ratio" />
-                ) : (
-                  <span className="font-display text-lg tabular-nums">{combinedScore(v).toFixed(1)}</span>
-                )}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ol>
+      {items.length === 0 ? (
+        <p className="mt-4 text-sm text-faint">Nothing in this filter.</p>
+      ) : (
+        <ol className="mt-4 space-y-2">
+          {items.map((v, i) => (
+            <li key={v.id}>
+              <a
+                href={hrefFor(v)}
+                className="flex w-full items-center gap-3 rounded-md border border-line bg-surface px-3 py-2.5 text-left no-underline hover:border-accent/40"
+              >
+                <span className="font-display w-6 text-lg text-faint tabular-nums">{i + 1}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm text-fg">{v.name}</span>
+                  <span className="block truncate text-[11px] text-faint">{overline(v)}</span>
+                </span>
+                <span className="w-20 shrink-0">
+                  {metric === "looks" ? (
+                    <ScoreMeter label="" value={v.looks} tone="looks" />
+                  ) : metric === "ratio" ? (
+                    <ScoreMeter label="" value={v.ratio} tone="ratio" />
+                  ) : (
+                    <span className="font-display text-lg tabular-nums">
+                      {combinedScore(v).toFixed(1)}
+                    </span>
+                  )}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }
