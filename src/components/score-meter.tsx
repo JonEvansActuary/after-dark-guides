@@ -15,11 +15,9 @@ export function ScoreMeter({
   return (
     <div className="min-w-0">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-xs font-medium tracking-wide text-muted uppercase">
-          {label}
-        </span>
+        <span className="text-xs font-medium tracking-wide text-muted uppercase">{label}</span>
         <span className="font-display text-lg tabular-nums leading-none text-fg">
-          {value.toFixed(0)}
+          {value.toFixed(1)}
           <span className="text-faint text-xs">/10</span>
         </span>
       </div>
@@ -32,9 +30,7 @@ export function ScoreMeter({
           style={{ width: `${pct}%` }}
         />
       </div>
-      {caption ? (
-        <p className="mt-1 truncate text-[11px] text-faint">{caption}</p>
-      ) : null}
+      {caption ? <p className="mt-1 truncate text-[11px] text-faint">{caption}</p> : null}
     </div>
   );
 }

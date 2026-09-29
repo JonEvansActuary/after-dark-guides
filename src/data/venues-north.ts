@@ -40,7 +40,7 @@ export const NORTH: Venue[] = [
     "Family-owned since 1991. Burgers, hand-cut fries, a north Knox staple.",
     "Families. Looks average. Ratio even. Not late.",
     ["burgers", "local", "family"], "high", N),
-  v("n-lulus", "Lulu's Tea Room", "Powell", "Cafe", "Powell", 6.5, 8, false, "Lunch; Sat afternoon",
+  v("kn-lulus", "Lulu's Tea Room", "Powell", "Cafe", "Powell", 6.5, 8, false, "Lunch; Sat afternoon",
     "Quaint Powell tea room. Cakes, lunch, reservations recommended.",
     "Mostly women. Looks average-plus (the room is pretty). Daytime. One of the highest female ratios in north Knox.",
     ["tea", "lunch", "cakes"], "high", N),

@@ -789,6 +789,44 @@ function fromOrlAddress(address: string): LatLng | null {
   return null;
 }
 
+const METERS_PER_DEG_LAT = 111_320;
+
+function metersBetween(a: LatLng, b: LatLng) {
+  const lat = ((a.lat + b.lat) / 2) * (Math.PI / 180);
+  const dLat = (a.lat - b.lat) * METERS_PER_DEG_LAT;
+  const dLng = (a.lng - b.lng) * METERS_PER_DEG_LAT * Math.cos(lat);
+  return Math.hypot(dLat, dLng);
+}
+
+/**
+ * Push markers that would land on the same spot far enough apart to tap.
+ * The first place in a pile keeps its geocoded point; later ones walk a spiral.
+ */
+export function separatePoints(
+  points: { id: string; lat: number; lng: number }[],
+  minMeters = 16,
+): Map<string, LatLng> {
+  const placed: LatLng[] = [];
+  const out = new Map<string, LatLng>();
+  for (const p of points) {
+    let lat = p.lat;
+    let lng = p.lng;
+    let n = 0;
+    while (n < 36 && placed.some((o) => metersBetween(o, { lat, lng }) < minMeters)) {
+      const ang = n * 2.399963229728653;
+      const ring = minMeters * (1 + Math.floor(n / 8));
+      const cos = Math.max(0.2, Math.cos((p.lat * Math.PI) / 180));
+      lat = p.lat + (Math.sin(ang) * ring) / METERS_PER_DEG_LAT;
+      lng = p.lng + (Math.cos(ang) * ring) / (METERS_PER_DEG_LAT * cos);
+      n++;
+    }
+    const pt = { lat, lng };
+    placed.push(pt);
+    out.set(p.id, pt);
+  }
+  return out;
+}
+
 export function placeCoords(p: Place): LatLng {
   const pinned = PIN[p.id];
   if (pinned) return jitter(p.id, clamp(p, pinned));

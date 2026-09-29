@@ -51,7 +51,7 @@ export function CityDock({
         })}
       </nav>
       <nav
-        className="mx-auto flex max-w-3xl overflow-hidden rounded-lg border border-line bg-surface"
+        className="mx-auto flex max-w-3xl overflow-x-auto rounded-lg border border-line bg-surface [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         aria-label="Region"
       >
         {regions.map((r) => (
@@ -61,7 +61,7 @@ export function CityDock({
             title={r.tab}
             aria-current={region === r.id ? "page" : undefined}
             className={cn(
-              "inline-flex h-11 min-w-0 flex-1 items-center justify-center truncate px-0.5 text-[10px] font-medium no-underline sm:h-12 sm:px-1 sm:text-xs",
+              "inline-flex h-11 min-w-max flex-1 items-center justify-center px-2.5 text-[11px] font-medium whitespace-nowrap no-underline sm:h-12 sm:px-3 sm:text-xs",
               region === r.id ? "bg-accent text-bg" : "text-muted",
             )}
           >
